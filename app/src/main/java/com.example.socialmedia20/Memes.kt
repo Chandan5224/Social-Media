@@ -1,4 +1,3 @@
-
 package com.example.socialmedia20
 
 import android.app.Application
@@ -56,9 +55,9 @@ class Memes : Fragment(){
         savedInstanceState: Bundle?, ): View? {
         root= inflater.inflate(R.layout.fragment_memes, container, false) as ViewGroup
         LoadMeme()
-        var next=root.findViewById<Button>(R.id.next_Button)
-        var share=root.findViewById<Button>(R.id.shareBtn)
-        var image=root.findViewById<ImageView>(R.id.memeImage)
+        val next=root.findViewById<Button>(R.id.next_Button)
+        val share=root.findViewById<Button>(R.id.shareBtn)
+        val image=root.findViewById<ImageView>(R.id.memeImage)
 
         next.setOnClickListener {
             LoadMeme()

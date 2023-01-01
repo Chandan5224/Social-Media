@@ -1,10 +1,15 @@
 package com.example.socialmedia20
 
+import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.Fragment
@@ -24,7 +29,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [News.newInstance] factory method to
  * create an instance of this fragment.
  */
-class News : Fragment(),NewsItemClicked {
+class News : Fragment(),NewsItemClicked{
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -93,7 +98,8 @@ class News : Fragment(),NewsItemClicked {
                         newsJesonObject.getString("title"),
                         newsJesonObject.getString("author"),
                         newsJesonObject.getString("url"),
-                        newsJesonObject.getString("urlToImage")
+                        newsJesonObject.getString("urlToImage"),
+                        newsJesonObject.getString("publishedAt")
                     )
                     newsArray.add(news)
                 }
@@ -109,9 +115,30 @@ class News : Fragment(),NewsItemClicked {
 
     override fun onItemClicked(item : MainData)
     {
+        // custom browse
         val builder = CustomTabsIntent.Builder()
         val customTabsIntent = builder.build()
         customTabsIntent.launchUrl(binding.root.context, Uri.parse(item.url))
     }
+
+    override fun onShareClick(item: MainData,imageView: ImageView) {
+        val intent= Intent(Intent.ACTION_SEND)
+
+        // for checking the urlToImage is it coming or not?
+        if(imageView.height>10)
+        {
+            val mBitmap= imageView!!.drawable as BitmapDrawable
+            val bitmap=mBitmap.bitmap
+            val contentResolver = requireActivity().contentResolver
+            val pat= MediaStore.Images.Media.insertImage(contentResolver,bitmap,item.title,null)
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(pat))
+            intent.type="image/*"
+        }
+        intent.type="text/*"
+        intent.putExtra(Intent.EXTRA_TEXT,item.title+"\nCheck out here :- "+item.url)
+        val chooser= Intent.createChooser(intent,item.title)
+        startActivity(chooser,null)
+    }
 }
+
 
