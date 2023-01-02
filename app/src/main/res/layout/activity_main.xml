@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/aclonica"
             android:text="Social Media"
-            android:textColor="@color/purple_500"
+            android:textColor="#9457E0"
             android:textSize="25sp" />
 
     </LinearLayout>
@@ -37,8 +37,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tabBackground="@color/white"
-        app:tabIndicatorColor="@color/purple_500"
-
+        app:tabIndicatorColor="#9457E0"
+        app:tabSelectedTextColor="#9457E0"
+        app:tabIconTint="#9457E0"
        >
 
         <com.google.android.material.tabs.TabItem
@@ -68,4 +69,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tabLayout"
         app:layout_constraintVertical_bias="0.0" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

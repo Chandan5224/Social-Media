@@ -14,10 +14,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.animation.AnimationUtils.loadAnimation
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.core.content.contentValuesOf
+import androidx.core.view.isVisible
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
@@ -26,8 +30,8 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.example.socialmedia20.databinding.FragmentMemesBinding
 import java.net.URL
+import com.google.android.material.animation.AnimationUtils as Ani
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -63,18 +67,22 @@ class Memes : Fragment(){
             LoadMeme()
         }
         share.setOnClickListener {
-           // for image
-            val mBitmap=image!!.drawable as BitmapDrawable
-            val bitmap=mBitmap.bitmap
-            val contentResolver = requireActivity().contentResolver
-            val pat= MediaStore.Images.Media.insertImage(contentResolver,bitmap,"Hey check out this cool meme!!",null)
+            val bar=root.findViewById<ProgressBar>(R.id.proBar)
+            if(!bar.isVisible) {
+                // for image
+                val mBitmap = image!!.drawable as BitmapDrawable
+                val bitmap = mBitmap.bitmap
+                val contentResolver = requireActivity().contentResolver
+                val pat = MediaStore.Images.Media.insertImage(contentResolver, bitmap, null, null)
 
-            val intent= Intent(Intent.ACTION_SEND)
-            intent.type="image/*"
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(pat))
-            intent.putExtra(Intent.EXTRA_TEXT,"Hey check out this cool meme!!")
-            val chooser= Intent.createChooser(intent,"Share this meme using....")
-            startActivity(chooser)
+                val intent = Intent(Intent.ACTION_SEND)
+                intent.type = "image/*"
+                intent.type = "text/*"
+                intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(pat))
+                intent.putExtra(Intent.EXTRA_TEXT, "Hey check out this cool meme!!")
+                val chooser = Intent.createChooser(intent, "Share this meme using....")
+                startActivity(chooser, null)
+            }
         }
         // Inflate the layout for this fragment
         return root

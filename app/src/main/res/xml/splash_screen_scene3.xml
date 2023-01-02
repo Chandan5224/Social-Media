@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="3000"
+        motion:autoTransition="animateToEnd">
+       <KeyFrameSet>
+           <KeyAttribute
+               motion:motionTarget="@+id/imageView"
+               motion:framePosition="10"
+               android:translationY="0dp"
+               android:scaleX="1"
+               android:scaleY="1" />
+           <KeyAttribute
+               motion:motionTarget="@+id/imageView"
+               motion:framePosition="45"
+               android:translationY="-80dp"
+               android:scaleX="0.8"
+               android:scaleY="0.8" />
+           <KeyAttribute
+               motion:motionTarget="@+id/textView"
+               motion:framePosition="48"
+               android:alpha="0.0" />
+           <KeyAttribute
+               motion:motionTarget="@+id/textView"
+               motion:framePosition="68"
+               android:alpha="1.0" />
+           <KeyAttribute
+               motion:motionTarget="@+id/made_textView"
+               motion:framePosition="68"
+               android:alpha="0.0" />
+           <KeyAttribute
+               motion:motionTarget="@+id/made_textView"
+               motion:framePosition="90"
+               android:alpha="1.0"
+               android:translationY="-20dp" />
+           <KeyAttribute
+               motion:motionTarget="@+id/imageView"
+               motion:framePosition="19"
+               android:translationY="-7dp" />
+       </KeyFrameSet>
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:id="@+id/textView"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            motion:layout_constraintBottom_toBottomOf="@+id/made_textView"
+            motion:layout_constraintTop_toBottomOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:alpha="0.0"
+            android:translationY="110dp" />
+        <Constraint
+            android:id="@+id/made_textView"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:alpha="0.0" />
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@+id/textView"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            motion:layout_constraintBottom_toBottomOf="@+id/made_textView"
+            motion:layout_constraintTop_toBottomOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:alpha="1.0"
+            android:translationY="110dp" />
+        <Constraint
+            android:id="@+id/made_textView"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:alpha="1.0"
+            android:translationY="-20dp" />
+        <Constraint
+            android:id="@+id/imageView"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="400dp"
+            android:layout_height="400dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:translationY="-80dp"
+            android:scaleX="0.8"
+            android:scaleY="0.8" />
+    </ConstraintSet>
+</MotionScene>

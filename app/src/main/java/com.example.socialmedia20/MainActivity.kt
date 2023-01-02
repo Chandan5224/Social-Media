@@ -1,21 +1,8 @@
 package com.example.socialmedia20
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View.inflate
-import android.view.Window
-import android.view.WindowManager
-import androidx.appcompat.app.ActionBar
-import androidx.core.view.get
-import androidx.fragment.app.FragmentPagerAdapter
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
-import com.example.recycleview.Fruit
-import com.example.recycleview.FruitAdapter
 import com.example.socialmedia20.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayout
 
@@ -27,11 +14,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         // Call
         setupViewPager()
-
-
     }
 
     private fun setupViewPager() {

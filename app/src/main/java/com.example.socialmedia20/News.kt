@@ -8,7 +8,6 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
@@ -83,7 +82,7 @@ class News : Fragment(),NewsItemClicked{
             }
     }
 
-    private fun fetchData(){
+    fun fetchData(){
         val url="https://saurav.tech/NewsAPI/top-headlines/category/health/in.json"
         val jsonObjectRequest= JsonObjectRequest(
             com.android.volley.Request.Method.GET,

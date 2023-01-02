@@ -1,14 +1,24 @@
 package com.example.socialmedia20
 
+import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.recycleview.Fruit
-import com.example.recycleview.FruitAdapter
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
+import com.example.recycleview.TrendingAdapter
+import com.example.recycleview.TrendingClicked
+import com.example.socialmedia20.databinding.FragmentTrendingBinding
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -20,16 +30,17 @@ private const val ARG_PARAM2 = "param2"
  * Use the [Trending.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Trending : Fragment() {
+class Trending : Fragment(),TrendingClicked{
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
     private lateinit var recycleView : RecyclerView
-    private lateinit var fruit : ArrayList<Fruit>
+    lateinit var binding: FragmentTrendingBinding
+    private lateinit var mAdapter: TrendingAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fruit= Fruit.getRandomFruits(100)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
@@ -41,14 +52,13 @@ class Trending : Fragment() {
         savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
-        var v= inflater.inflate(R.layout.fragment_trending, container, false)
-
-        recycleView=v.findViewById(R.id.trendingView)
+        binding= FragmentTrendingBinding.inflate(inflater, container, false)
+        recycleView=binding.trendingView
         recycleView.layoutManager=LinearLayoutManager(context)
-        val fruitAdapter = FruitAdapter(fruit)
-        recycleView.adapter=fruitAdapter
-
-        return v
+        fetchData()
+        mAdapter = TrendingAdapter(this)
+        recycleView.adapter=mAdapter
+        return binding.root
     }
 
     companion object {
@@ -70,4 +80,62 @@ class Trending : Fragment() {
                 }
             }
     }
+
+    fun fetchData(){
+        val url="https://saurav.tech/NewsAPI/top-headlines/category/health/in.json"
+        val jsonObjectRequest= JsonObjectRequest(
+            Request.Method.GET,
+            url,
+            null,
+            {
+                val newsJsonArray=it.getJSONArray("articles")
+                val newsArray=ArrayList<MainData>()
+                for(i in 0 until newsJsonArray.length()){
+                    val newsJesonObject=newsJsonArray.getJSONObject(i)
+                    val news=MainData(
+                        newsJesonObject.getString("title"),
+                        newsJesonObject.getString("author"),
+                        newsJesonObject.getString("url"),
+                        newsJesonObject.getString("urlToImage"),
+                        newsJesonObject.getString("publishedAt")
+                    )
+                    newsArray.add(news)
+                }
+                mAdapter.updateNews(newsArray)
+            },
+            {
+                Toast.makeText(context, "Data Not Fetched!!", Toast.LENGTH_SHORT).show()
+            }
+        )
+
+        MySingleton.getInstance(binding.root.context).addToRequestQueue(jsonObjectRequest)
+    }
+
+    override fun onItemClicked(item : MainData)
+    {
+        // custom browse
+        val builder = CustomTabsIntent.Builder()
+        val customTabsIntent = builder.build()
+        customTabsIntent.launchUrl(binding.root.context, Uri.parse(item.url))
+    }
+
+    override fun onShareClick(item: MainData,imageView: ImageView) {
+        val intent= Intent(Intent.ACTION_SEND)
+
+        // for checking the urlToImage is it coming or not?
+        if(imageView.height>10)
+        {
+            val mBitmap= imageView!!.drawable as BitmapDrawable
+            val bitmap=mBitmap.bitmap
+            val contentResolver = requireActivity().contentResolver
+            val pat= MediaStore.Images.Media.insertImage(contentResolver,bitmap,item.title,null)
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(pat))
+            intent.type="image/*"
+        }
+        intent.type="text/*"
+        intent.putExtra(Intent.EXTRA_TEXT,item.title+"\nCheck out here :- "+item.url)
+        val chooser= Intent.createChooser(intent,item.title)
+        startActivity(chooser,null)
+    }
 }
+

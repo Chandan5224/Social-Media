@@ -27,29 +27,30 @@
         app:layout_constraintRight_toRightOf="@+id/memeImage"
         app:layout_constraintTop_toTopOf="@+id/memeImage" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/shareBtn"
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:text="Share"
+        android:background="@drawable/button_anim"
         android:textSize="15sp"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:textColor="#9457E0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="@+id/guideline3"
-        android:background="@color/share"/>
+      />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/next_Button"
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:textSize="15sp"
         android:text="Next"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:textColor="#9457E0"
+        android:background="@drawable/button_anim"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toRightOf="@id/guideline3"
-        android:background="@color/next"
         />
 
     <androidx.constraintlayout.widget.Guideline

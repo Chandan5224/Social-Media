@@ -1,4 +1,4 @@
-package com.example.socialmedia20
+package com.example.recycleview
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,17 +8,19 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.socialmedia20.MainData
+import com.example.socialmedia20.News
+import com.example.socialmedia20.R
+import com.example.socialmedia20.Trending
 
-class NewsAdapter(private val listener: News) :RecyclerView.Adapter<NewsAdapter.NewsViewHolder>(){
+class TrendingAdapter(private val listener: Trending) : RecyclerView.Adapter<TrendingAdapter.TrendingViewHolder>() {
 
     private val items: ArrayList<MainData> = ArrayList()
+    class TrendingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-    class NewsViewHolder(itemView: View):RecyclerView.ViewHolder(itemView)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrendingViewHolder {
         val view=LayoutInflater.from(parent.context).inflate(R.layout.news, parent, false)
-        val viewHolder=NewsViewHolder(view)
-
+        val viewHolder= TrendingAdapter.TrendingViewHolder(view)
         /// For Clicked Items
         view.setOnClickListener {
             listener.onItemClicked(items[viewHolder.adapterPosition])
@@ -30,17 +32,12 @@ class NewsAdapter(private val listener: News) :RecyclerView.Adapter<NewsAdapter.
         return viewHolder
     }
 
-    override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: TrendingViewHolder, position: Int) {
         val currentItem=items[position]
         holder.itemView.findViewById<TextView>(R.id.itemTitle).text=currentItem.title
         holder.itemView.findViewById<TextView>(R.id.authorTitle).text=currentItem.author
         holder.itemView.findViewById<TextView>(R.id.time).text=currentItem.time
         Glide.with(holder.itemView.context).load(currentItem.imageUrl).into(holder.itemView.findViewById<ImageView>(R.id.imageItem))
-
-    }
-
-    override fun getItemCount(): Int {
-        return items.size
     }
 
     fun updateNews(updatedNews: ArrayList<MainData>)
@@ -51,9 +48,10 @@ class NewsAdapter(private val listener: News) :RecyclerView.Adapter<NewsAdapter.
         ///it's call again whole Adapter work
         notifyDataSetChanged()
     }
-}
 
-interface NewsItemClicked{
+    override fun getItemCount(): Int = items.size
+}
+interface TrendingClicked{
     fun onItemClicked(item : MainData)
     fun onShareClick(item:MainData,imageView: ImageView)
 }
