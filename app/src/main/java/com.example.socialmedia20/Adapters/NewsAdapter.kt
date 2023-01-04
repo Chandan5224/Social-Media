@@ -8,6 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.socialmedia20.Data.MainData
+import com.example.socialmedia20.Fragments.News
 
 class NewsAdapter(private val listener: News) :RecyclerView.Adapter<NewsAdapter.NewsViewHolder>(){
 
@@ -55,5 +57,5 @@ class NewsAdapter(private val listener: News) :RecyclerView.Adapter<NewsAdapter.
 
 interface NewsItemClicked{
     fun onItemClicked(item : MainData)
-    fun onShareClick(item:MainData,imageView: ImageView)
+    fun onShareClick(item: MainData, imageView: ImageView)
 }

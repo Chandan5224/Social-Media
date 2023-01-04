@@ -1,4 +1,4 @@
-package com.example.socialmedia20
+package com.example.socialmedia20.Data
 
 
 import android.content.Context
@@ -11,9 +11,9 @@ class MySingleton constructor(context: Context) {
         @Volatile
         private var INSTANCE: MySingleton?=null
         fun getInstance(context: Context)=
-            INSTANCE?: synchronized(this){
-                INSTANCE?: MySingleton(context).also {
-                    INSTANCE=it
+            INSTANCE ?: synchronized(this){
+                INSTANCE ?: MySingleton(context).also {
+                    INSTANCE =it
                 }
             }
     }

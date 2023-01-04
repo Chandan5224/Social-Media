@@ -1,4 +1,4 @@
-package com.example.socialmedia20
+package com.example.socialmedia20.Adapters
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

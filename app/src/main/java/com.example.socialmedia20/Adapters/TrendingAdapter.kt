@@ -8,10 +8,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.socialmedia20.MainData
-import com.example.socialmedia20.News
+import com.example.socialmedia20.Data.MainData
+import com.example.socialmedia20.Fragments.Trending
 import com.example.socialmedia20.R
-import com.example.socialmedia20.Trending
 
 class TrendingAdapter(private val listener: Trending) : RecyclerView.Adapter<TrendingAdapter.TrendingViewHolder>() {
 
@@ -22,13 +21,13 @@ class TrendingAdapter(private val listener: Trending) : RecyclerView.Adapter<Tre
         val view=LayoutInflater.from(parent.context).inflate(R.layout.news, parent, false)
         val viewHolder= TrendingAdapter.TrendingViewHolder(view)
         /// For Clicked Items
-        view.setOnClickListener {
-            listener.onItemClicked(items[viewHolder.adapterPosition])
-        }
-
-        view.findViewById<ImageButton>(R.id.shareB).setOnClickListener {
-            listener.onShareClick(items[viewHolder.adapterPosition],view.findViewById<ImageView>(R.id.imageItem))
-        }
+//        view.setOnClickListener {
+//            listener.onItemClicked(items[viewHolder.adapterPosition])
+//        }
+//
+//        view.findViewById<ImageButton>(R.id.shareB).setOnClickListener {
+//            listener.onShareClick(items[viewHolder.adapterPosition],view.findViewById<ImageView>(R.id.imageItem))
+//        }
         return viewHolder
     }
 
@@ -53,5 +52,5 @@ class TrendingAdapter(private val listener: Trending) : RecyclerView.Adapter<Tre
 }
 interface TrendingClicked{
     fun onItemClicked(item : MainData)
-    fun onShareClick(item:MainData,imageView: ImageView)
+    fun onShareClick(item: MainData, imageView: ImageView)
 }

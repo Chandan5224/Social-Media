@@ -1,4 +1,4 @@
-package com.example.socialmedia20
+package com.example.socialmedia20.Fragments
 
 import android.app.Application
 import android.content.ContentResolver
@@ -30,6 +30,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.example.socialmedia20.R
 import java.net.URL
 import com.google.android.material.animation.AnimationUtils as Ani
 

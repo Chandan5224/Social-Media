@@ -1,26 +1,32 @@
-package com.example.socialmedia20
+package com.example.socialmedia20.Activity
 
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.example.socialmedia20.*
+import com.example.socialmedia20.Adapters.VPAdapter
+import com.example.socialmedia20.Fragments.Memes
+import com.example.socialmedia20.Fragments.News
+import com.example.socialmedia20.Fragments.Trending
 import com.example.socialmedia20.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayout
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         // Call
         setupViewPager()
     }
 
     private fun setupViewPager() {
         binding.tabLayout.setupWithViewPager(binding.viewPager)
-        val vpAdapter=VPAdapter(supportFragmentManager)
+        val vpAdapter= VPAdapter(supportFragmentManager)
         vpAdapter.apply {
             add(Trending(),"")
             add(Memes(),"")
@@ -32,8 +38,6 @@ class MainActivity : AppCompatActivity() {
         binding.tabLayout.getTabAt(1)?.setIcon(R.drawable.ic_memes)
         binding.tabLayout.getTabAt(2)?.setIcon(R.drawable.ic_news)
         binding.tabLayout.tabGravity=TabLayout.GRAVITY_FILL
-
-
     }
 
     private fun statusBarColor()

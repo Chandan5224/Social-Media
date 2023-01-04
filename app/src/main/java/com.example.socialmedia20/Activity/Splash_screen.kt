@@ -1,11 +1,7 @@
-package com.example.socialmedia20
+package com.example.socialmedia20.Activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
 import com.example.socialmedia20.databinding.SplashScreenBinding
@@ -38,7 +34,7 @@ class splash_screen : AppCompatActivity() {
             }
 
             override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
-                startActivity(Intent(this@splash_screen,SignInActivity::class.java))
+                startActivity(Intent(this@splash_screen, SignInActivity::class.java))
                 finish()
             }
 

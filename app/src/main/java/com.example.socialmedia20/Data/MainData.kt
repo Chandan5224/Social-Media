@@ -1,4 +1,4 @@
-package com.example.socialmedia20
+package com.example.socialmedia20.Data
 
 data class MainData(
     val title: String,

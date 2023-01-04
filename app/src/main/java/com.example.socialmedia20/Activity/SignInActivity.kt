@@ -1,12 +1,14 @@
-package com.example.socialmedia20
+package com.example.socialmedia20.Activity
 
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings.Global
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.example.socialmedia20.Data.User
+import com.example.socialmedia20.R
+import com.example.socialmedia20.Data.UserDao
 import com.example.socialmedia20.databinding.ActivitySignInBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -101,6 +103,10 @@ class SignInActivity : AppCompatActivity() {
 
     private fun updateUI(firebaseUser: FirebaseUser?) {
         if(firebaseUser != null) {
+            // add user
+            val user= User(firebaseUser.uid,firebaseUser.displayName,firebaseUser.photoUrl.toString())
+            val userDao= UserDao()
+            userDao.addUser(user)
 
             val mainActivityIntent = Intent(this, MainActivity::class.java)
             startActivity(mainActivityIntent)
