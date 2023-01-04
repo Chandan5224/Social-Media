@@ -30,7 +30,7 @@
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/shareBtn"
         android:layout_width="0dp"
-        android:layout_height="70dp"
+        android:layout_height="55dp"
         android:text="Share"
         android:background="@drawable/button_anim"
         android:textSize="15sp"
@@ -43,7 +43,7 @@
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/next_Button"
         android:layout_width="0dp"
-        android:layout_height="70dp"
+        android:layout_height="55dp"
         android:textSize="15sp"
         android:text="Next"
         android:textColor="#9457E0"

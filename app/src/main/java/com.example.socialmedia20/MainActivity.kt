@@ -22,13 +22,13 @@ class MainActivity : AppCompatActivity() {
         binding.tabLayout.setupWithViewPager(binding.viewPager)
         val vpAdapter=VPAdapter(supportFragmentManager)
         vpAdapter.apply {
-            add(Trending(),"Trending")
-            add(Memes(),"Memes")
-            add(News(),"News")
+            add(Trending(),"")
+            add(Memes(),"")
+            add(News(),"")
         }
         binding.viewPager.adapter=vpAdapter
 
-        binding.tabLayout.getTabAt(0)?.setIcon(R.drawable.ic_trending)
+        binding.tabLayout.getTabAt(0)?.setIcon(R.drawable.ic_baseline_home_24)
         binding.tabLayout.getTabAt(1)?.setIcon(R.drawable.ic_memes)
         binding.tabLayout.getTabAt(2)?.setIcon(R.drawable.ic_news)
         binding.tabLayout.tabGravity=TabLayout.GRAVITY_FILL

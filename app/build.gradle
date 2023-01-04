@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -41,6 +42,31 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.3.1'
+    //coroutines
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:getRootProject().coroutines"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:getRootProject().coroutines"
+    /* coroutines support for firebase operations */
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1'
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:26.1.0')
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-auth-ktx'
+
+
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
+    // Testing
+    testImplementation "junit:junit:getRootProject().junitVersion"
+    androidTestImplementation "androidx.arch.core:core-testing:getRootProject().coreTestingVersion"
+    androidTestImplementation ("androidx.test.espresso:espresso-core:getRootProject().espressoVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestImplementation "androidx.test.ext:junit:getRootProject().androidxJunitVersion"
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
