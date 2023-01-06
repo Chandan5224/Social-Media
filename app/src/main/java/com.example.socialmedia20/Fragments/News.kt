@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,11 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.AuthFailureError
+import com.android.volley.Request
+import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.example.socialmedia20.Activity.MainActivity
 import com.example.socialmedia20.Data.MainData
 import com.example.socialmedia20.Data.MySingleton
@@ -116,35 +121,46 @@ class News : Fragment(), NewsItemClicked {
             }
     }
 
-    fun fetchData(){
-        val url="https://saurav.tech/NewsAPI/top-headlines/category/health/in.json"
-        val jsonObjectRequest= JsonObjectRequest(
-            com.android.volley.Request.Method.GET,
+    private fun fetchData(){
+        val queue = Volley.newRequestQueue(context)
+        val url = "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=a350e62265ce4d768cebdb7e7abc5e8e"
+
+        val jsonObjectRequest = object :JsonObjectRequest(
+            Request.Method.GET,
             url,
             null,
-            {
-                val newsJsonArray=it.getJSONArray("articles")
-                val newsArray=ArrayList<MainData>()
-                for(i in 0 until newsJsonArray.length()){
-                    val newsJesonObject=newsJsonArray.getJSONObject(i)
-                    val news= MainData(
-                        newsJesonObject.getString("title"),
-                        newsJesonObject.getString("author"),
-                        newsJesonObject.getString("url"),
-                        newsJesonObject.getString("urlToImage"),
-                        newsJesonObject.getString("publishedAt")
+            Response.Listener {
+                val newsJsonArray = it.getJSONArray("articles")
+                val newsArray = ArrayList<MainData>()
+                for(i in 0 until newsJsonArray.length()) {
+                    val newsJsonObject = newsJsonArray.getJSONObject(i)
+                    val news = MainData(
+                        newsJsonObject.getString("title"),
+                        newsJsonObject.getString("author"),
+                        newsJsonObject.getString("url"),
+                        newsJsonObject.getString("urlToImage"),
+                        newsJsonObject.getString("publishedAt")
                     )
                     newsArray.add(news)
                 }
                 mAdapter.updateNews(newsArray)
             },
-            {
-                Toast.makeText(context, "Data Not Fetched!!", Toast.LENGTH_SHORT).show()
+            Response.ErrorListener {
+
             }
         )
+        {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): Map<String, String> {
+                val params: MutableMap<String, String> = HashMap()
+                params["User-Agent"] = "Mozilla/5.0"
+                return params
+            }
+        }
 
         MySingleton.getInstance(binding.root.context).addToRequestQueue(jsonObjectRequest)
     }
+
 
     override fun onItemClicked(item : MainData)
     {

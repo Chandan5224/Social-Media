@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 import com.example.socialmedia20.Data.MainData
 import com.example.socialmedia20.Fragments.News
 
-class NewsAdapter(private val listener: News) :RecyclerView.Adapter<NewsAdapter.NewsViewHolder>(){
+class NewsAdapter(private val listener: NewsItemClicked) :RecyclerView.Adapter<NewsAdapter.NewsViewHolder>(){
 
     private val items: ArrayList<MainData> = ArrayList()
 

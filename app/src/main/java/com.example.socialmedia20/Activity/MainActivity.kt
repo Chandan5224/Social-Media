@@ -5,9 +5,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.socialmedia20.*
 import com.example.socialmedia20.Adapters.VPAdapter
+import com.example.socialmedia20.Fragments.Home
 import com.example.socialmedia20.Fragments.Memes
 import com.example.socialmedia20.Fragments.News
-import com.example.socialmedia20.Fragments.Trending
 import com.example.socialmedia20.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayout
 
@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         binding.tabLayout.setupWithViewPager(binding.viewPager)
         val vpAdapter= VPAdapter(supportFragmentManager)
         vpAdapter.apply {
-            add(Trending(),"")
+            add(Home(),"")
             add(Memes(),"")
             add(News(),"")
         }
