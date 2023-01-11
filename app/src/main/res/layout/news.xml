@@ -62,13 +62,12 @@
                     app:layout_constraintStart_toEndOf="@+id/authorTitle"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.appcompat.widget.AppCompatImageButton
+                <ImageView
                     android:id="@+id/shareB"
                     android:layout_width="38dp"
                     android:layout_height="36dp"
                     android:scaleType="center"
                     android:src="@drawable/ic_baseline_share"
-                    android:background="@drawable/button_anim"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"

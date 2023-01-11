@@ -71,25 +71,28 @@ class News : Fragment(), NewsItemClicked {
         mAdapter = NewsAdapter(this)
         recycleView.adapter=mAdapter
         mActivity=(activity as MainActivity)
-        val array = arrayOf(1)
 
-        val onScrollListener: RecyclerView.OnScrollListener =
-            object : RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    // code
-                    array[0]=newState
-                }
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    // code
-                    if(dy>0 && (array[0]==0 || array[0]==2))
-                    {
-                        hideToolbar();
-                    }else if(dy<-10){
-                        showToolbar();
-                    }
-                }
-            }
-        recycleView.addOnScrollListener(onScrollListener)
+        // Scroll Check Handle
+//        val array = arrayOf(1)
+
+//        val onScrollListener: RecyclerView.OnScrollListener =
+//            object : RecyclerView.OnScrollListener() {
+//                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                    // code
+//                    array[0]=newState
+//                }
+//                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+//                    // code
+//                    if(dy>0 && (array[0]==0 || array[0]==2))
+//                    {
+//                        hideToolbar();
+//                    }else if(dy<-10){
+//                        showToolbar();
+//                    }
+//                }
+//            }
+//        recycleView.addOnScrollListener(onScrollListener)
+
         return binding.root
     }
 

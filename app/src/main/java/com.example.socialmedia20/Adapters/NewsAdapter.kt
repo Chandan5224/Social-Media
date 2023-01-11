@@ -26,7 +26,7 @@ class NewsAdapter(private val listener: NewsItemClicked) :RecyclerView.Adapter<N
             listener.onItemClicked(items[viewHolder.adapterPosition])
         }
 
-        view.findViewById<ImageButton>(R.id.shareB).setOnClickListener {
+        view.findViewById<ImageView>(R.id.shareB).setOnClickListener {
             listener.onShareClick(items[viewHolder.adapterPosition],view.findViewById<ImageView>(R.id.imageItem))
         }
         return viewHolder

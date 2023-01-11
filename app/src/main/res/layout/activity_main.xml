@@ -16,18 +16,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:menu="@menu/home_menu"
+            app:popupTheme="@style/Widget.AppCompat.PopupMenu.Overflow"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            app:contentInsetStartWithNavigation="0dp"
+>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="5dp"
+                android:layout_gravity="center_vertical"
                 android:fontFamily="@font/aclonica"
                 android:text="Social Media"
                 android:textColor="#9457E0"
-                android:textSize="25sp"/>
+                android:textSize="25sp" />
         </androidx.appcompat.widget.Toolbar>
 
     </LinearLayout>
@@ -41,7 +50,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:tabBackground="@color/white"
         app:tabIconTint="#9457E0"
-        app:tabIndicatorColor="#F4511E">
+        app:tabIndicatorColor="#9457E0">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"

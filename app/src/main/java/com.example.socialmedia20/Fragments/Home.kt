@@ -1,15 +1,17 @@
 package com.example.socialmedia20.Fragments
 
-import android.app.DownloadManager.Query
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.socialmedia20.Activity.CreatePostActivity
+import com.example.socialmedia20.Adapters.IPostAdapter
 import com.example.socialmedia20.Adapters.PostAdapter
 import com.example.socialmedia20.Data.Post
 import com.example.socialmedia20.Data.PostDao
@@ -26,7 +28,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [Home.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Home : Fragment(){
+class Home : Fragment(), IPostAdapter {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -52,13 +54,10 @@ class Home : Fragment(){
         // Inflate the layout for this fragment
         binding= FragmentTrendingBinding.inflate(layoutInflater)
 
-        binding.fab.setOnClickListener {
-            val intent=Intent(this@Home.requireContext(),CreatePostActivity::class.java)
-            startActivity(intent)
-        }
         setUpRecyclerView()
         return binding.root
     }
+
 
     private fun setUpRecyclerView() {
         postDao=PostDao()
@@ -66,10 +65,35 @@ class Home : Fragment(){
         val query=postCollection.orderBy("createdAt",com.google.firebase.firestore.Query.Direction.DESCENDING)
         val recyclerViewOptions=FirestoreRecyclerOptions.Builder<Post>().setQuery(query,Post::class.java).build()
         recycleView=binding.trendingView
-        mAdapter = PostAdapter(recyclerViewOptions)
+        mAdapter = PostAdapter(recyclerViewOptions,this@Home)
         recycleView.adapter=mAdapter
-        recycleView.layoutManager=LinearLayoutManager(context)
+        recycleView.layoutManager=LinearLayoutManagerWrapper(context,LinearLayoutManager.VERTICAL,false)
+    // recycleView.layoutManager=LinearLayoutManager(context)
     }
+
+
+    class LinearLayoutManagerWrapper : LinearLayoutManager {
+        constructor(context: Context?) : super(context) {}
+        constructor(context: Context?, orientation: Int, reverseLayout: Boolean) : super(
+            context,
+            orientation,
+            reverseLayout
+        ) {
+        }
+
+        constructor(
+            context: Context?,
+            attrs: AttributeSet?,
+            defStyleAttr: Int,
+            defStyleRes: Int
+        ) : super(context, attrs, defStyleAttr, defStyleRes) {
+        }
+
+        override fun supportsPredictiveItemAnimations(): Boolean {
+            return false
+        }
+    }
+
 
     override fun onStart() {
         super.onStart()
@@ -99,6 +123,10 @@ class Home : Fragment(){
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onLikeClicked(postId: String) {
+        postDao.updateLikes(postId)
     }
 }
 

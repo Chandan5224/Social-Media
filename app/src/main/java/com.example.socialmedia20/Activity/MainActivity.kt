@@ -1,7 +1,13 @@
 package com.example.socialmedia20.Activity
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.ContextMenu
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.socialmedia20.*
 import com.example.socialmedia20.Adapters.VPAdapter
@@ -19,6 +25,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // set custom toolbar
+        binding.toolbar.title=""
+        setSupportActionBar(binding.toolbar)
 
         // Call
         setupViewPager()
@@ -40,10 +50,21 @@ class MainActivity : AppCompatActivity() {
         binding.tabLayout.tabGravity=TabLayout.GRAVITY_FILL
     }
 
-    private fun statusBarColor()
-    {
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M)
-            window.statusBarColor=resources.getColor(R.color.white,this.theme)
-        else window.statusBarColor=resources.getColor(R.color.teal_200)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.home_menu,menu);
+        return true
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.nav_account){
+            Toast.makeText(this, "Click Account Icon.", Toast.LENGTH_SHORT).show();
+        }
+        if (item.itemId== R.id.nav_post){
+            val intent= Intent(this,CreatePostActivity::class.java)
+            startActivity(intent)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
 }
