@@ -25,7 +25,7 @@ class PostDao {
     val auth=Firebase.auth
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun addPost(text: String,uid:String)
+    fun addPost(text: String,imageUrl:String)
     {
         GlobalScope.launch {
             // get current user
@@ -33,9 +33,8 @@ class PostDao {
             val userDao = UserDao()
             val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
             val currentTime = System.currentTimeMillis()
-            val post = Post(uid,text, user, currentTime)
-
-            postCollection.document(uid).set(post) /// set new post
+            val post = Post(text, user, currentTime,imageUrl)
+            postCollection.document().set(post) /// set new post
         }
     }
     fun getPostByID(postId: String): Task<DocumentSnapshot>

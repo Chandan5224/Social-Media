@@ -1,10 +1,12 @@
 package com.example.socialmedia20.Activity
 
+import android.content.ComponentName
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.example.socialmedia20.Data.User
 import com.example.socialmedia20.R
@@ -21,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import io.grpc.Status.Code
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 
@@ -32,10 +35,12 @@ class SignInActivity : AppCompatActivity() {
     lateinit var mGoogleSignInClient:GoogleSignInClient
     lateinit var auth:FirebaseAuth
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -115,5 +120,8 @@ class SignInActivity : AppCompatActivity() {
             binding.signINBtn.visibility = View.VISIBLE
             binding.proBar.visibility = View.GONE
         }
+    }
+
+    override fun onBackPressed() {
     }
 }

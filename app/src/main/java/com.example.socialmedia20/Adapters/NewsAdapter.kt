@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -38,7 +39,8 @@ class NewsAdapter(private val listener: NewsItemClicked) :RecyclerView.Adapter<N
         holder.itemView.findViewById<TextView>(R.id.authorTitle).text=currentItem.author
         holder.itemView.findViewById<TextView>(R.id.time).text=currentItem.time
         Glide.with(holder.itemView.context).load(currentItem.imageUrl).into(holder.itemView.findViewById<ImageView>(R.id.imageItem))
-
+        val pro=holder.itemView.findViewById<ProgressBar>(R.id.proBarNews)
+        pro?.visibility=View.GONE
     }
 
     override fun getItemCount(): Int {

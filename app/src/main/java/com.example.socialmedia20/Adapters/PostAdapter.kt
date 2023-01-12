@@ -5,8 +5,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -44,6 +46,9 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
         viewHolder.likeButton.setOnClickListener {
             listener.onLikeClicked(snapshots.getSnapshot(viewHolder.adapterPosition).id)
         }
+        viewHolder.itemView.setOnClickListener {
+            listener.onPostClicked(viewHolder.image)
+        }
         return viewHolder
     }
 
@@ -52,41 +57,26 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
         holder.postText.text = model.text
         holder.userText.text = model.createdBy.displayName
         Glide.with(holder.userImage.context).load(model.createdBy.imageUrl).circleCrop().into(holder.userImage)
+        Glide.with(holder.image.context).load(model.imageUrl).into(holder.image)
         holder.likeCount.text = model.likedBy.size.toString()
         holder.createdAt.text = Utils.getTimeAgo(model.createdAt)
         // check the user already like the post or not
         val auth=Firebase.auth
         val currentUserID=auth.currentUser!!.uid
         val isLiked=model.likedBy.contains(currentUserID)
-        val storageRef: StorageReference = FirebaseStorage.getInstance().getReference("images/"+model.uid+".jpg")
-        try {
-            val localFile:File=File.createTempFile("tempfile",".jpg")
-                storageRef.getFile(localFile).addOnSuccessListener {
-                    val bitmap=BitmapFactory.decodeFile(localFile.absolutePath)
-                    holder.image.setImageBitmap(bitmap)
-                    Log.d(TAG, "Post uid"+model.uid)
-                }.removeOnCanceledListener {
-                    Log.d(TAG, "onBindViewHolder: not found")
-                }
-        }catch (_:Exception){
-            Log.d(TAG, "onBindViewHolder: not found")
-        }
-
-//        if(model.imageUrl.isNotEmpty())
-//            holder.image.setImageURI(model.imageUrl.toUri())
-//        else
-//            holder.image.setImageDrawable(ContextCompat.getDrawable(holder.image.context,R.drawable.ic_news))
         if (isLiked){
             holder.likeButton.setImageDrawable(ContextCompat.getDrawable(holder.likeButton.context,R.drawable.ic_liked))
         }else{
             holder.likeButton.setImageDrawable(ContextCompat.getDrawable(holder.likeButton.context,R.drawable.ic_unliked))
         }
+        holder.itemView.findViewById<ProgressBar>(R.id.proBarHome)?.visibility=View.GONE
 
     }
 }
 
 interface IPostAdapter{
     fun onLikeClicked(postId:String)
+    fun onPostClicked(imageView: ImageView)
 }
 
 

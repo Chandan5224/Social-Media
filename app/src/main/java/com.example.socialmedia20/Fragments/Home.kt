@@ -1,22 +1,31 @@
 package com.example.socialmedia20.Fragments
 
+import android.app.Dialog
 import android.content.Context
-import android.content.Intent
+import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.ImageView
+import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.socialmedia20.Activity.CreatePostActivity
 import com.example.socialmedia20.Adapters.IPostAdapter
 import com.example.socialmedia20.Adapters.PostAdapter
 import com.example.socialmedia20.Data.Post
 import com.example.socialmedia20.Data.PostDao
 import com.example.socialmedia20.databinding.FragmentTrendingBinding
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -53,7 +62,6 @@ class Home : Fragment(), IPostAdapter {
     ): View? {
         // Inflate the layout for this fragment
         binding= FragmentTrendingBinding.inflate(layoutInflater)
-
         setUpRecyclerView()
         return binding.root
     }
@@ -69,6 +77,7 @@ class Home : Fragment(), IPostAdapter {
         recycleView.adapter=mAdapter
         recycleView.layoutManager=LinearLayoutManagerWrapper(context,LinearLayoutManager.VERTICAL,false)
     // recycleView.layoutManager=LinearLayoutManager(context)
+
     }
 
 
@@ -128,5 +137,31 @@ class Home : Fragment(), IPostAdapter {
     override fun onLikeClicked(postId: String) {
         postDao.updateLikes(postId)
     }
+
+    override fun onPostClicked(imageView: ImageView) {
+
+        val mBitmap = imageView!!.drawable as BitmapDrawable
+        val bitmap = mBitmap.bitmap
+        val contentResolver = requireActivity().contentResolver
+        val pat = MediaStore.Images.Media.insertImage(contentResolver, bitmap, null, null)
+        val builder = Dialog(binding.root.context)
+        builder.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        builder.getWindow()!!.setBackgroundDrawable(
+            ColorDrawable(Color.TRANSPARENT)
+        )
+        builder.setOnDismissListener(DialogInterface.OnDismissListener {
+            //nothing;
+        })
+        val imageView = ImageView(binding.root.context)
+        imageView.setImageURI(Uri.parse(pat))
+        builder.addContentView(
+            imageView, RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+        builder.show()
+    }
+
 }
 

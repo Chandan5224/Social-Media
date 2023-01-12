@@ -59,7 +59,7 @@
                 android:id="@+id/postInput"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:gravity="top"
+                android:gravity="center"
                 android:layout_weight="1"
                 android:hint="@string/hint"
                 android:padding="12dp" />
@@ -87,7 +87,6 @@
         android:maxLines="2"
         android:text="POST"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chooseBtn" />
 

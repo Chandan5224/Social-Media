@@ -1,21 +1,20 @@
 package com.example.socialmedia20.Activity
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.socialmedia20.*
+import androidx.core.graphics.drawable.toDrawable
 import com.example.socialmedia20.Adapters.VPAdapter
 import com.example.socialmedia20.Fragments.Home
 import com.example.socialmedia20.Fragments.Memes
 import com.example.socialmedia20.Fragments.News
+import com.example.socialmedia20.Fragments.PopupWindow
+import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayout
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         // Call
         setupViewPager()
     }
+
 
     private fun setupViewPager() {
         binding.tabLayout.setupWithViewPager(binding.viewPager)
@@ -57,7 +57,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.nav_account){
-            Toast.makeText(this, "Click Account Icon.", Toast.LENGTH_SHORT).show();
+            val dialog=PopupWindow()
+            dialog.show(supportFragmentManager,"PopupWindow")
+
         }
         if (item.itemId== R.id.nav_post){
             val intent= Intent(this,CreatePostActivity::class.java)
@@ -65,6 +67,4 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-
 }

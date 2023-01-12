@@ -14,17 +14,23 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.example.socialmedia20.Data.PostDao
 import com.example.socialmedia20.databinding.ActivityCreatePostBinding
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 
 @Suppress("DEPRECATION")
 class CreatePostActivity : AppCompatActivity() {
     lateinit var binding: ActivityCreatePostBinding
     private lateinit var postDao: PostDao
+    private lateinit var storageRef :StorageReference
     lateinit var imageUri :Uri
+    private var imageUrl: String =""
+
+
     var check=true
     // Create a Cloud Storage reference from the app
 
@@ -58,11 +64,18 @@ class CreatePostActivity : AppCompatActivity() {
         binding.postBtn.setOnClickListener {
             val input = binding.postInput.text.toString().trim()
             if(input.isNotEmpty()&&!check) {
-                val uid=UUID.randomUUID().toString()
-                Log.d(ContentValues.TAG, "addPost: $uid")
-                val storageRef: StorageReference = FirebaseStorage.getInstance().getReference("images/$uid.jpg")
-                storageRef.putFile(imageUri)
-                postDao.addPost(input,uid)
+                storageRef=FirebaseStorage.getInstance().reference.child("images")
+                storageRef=storageRef.child(System.currentTimeMillis().toString())
+                storageRef.putFile(imageUri).addOnCompleteListener{
+                    if(it.isSuccessful){
+                        storageRef.downloadUrl.addOnSuccessListener {uri ->
+                            imageUrl=uri.toString()
+                            postDao.addPost(input,imageUrl)
+                        }
+                    }else{
+                        Toast.makeText(this, it.exception?.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
                 Toast.makeText(this,"Post Added",Toast.LENGTH_SHORT).show()
                 check=true
                 finish()
@@ -70,6 +83,7 @@ class CreatePostActivity : AppCompatActivity() {
         }
 
     }
+
 
     private fun requestPermission() {
         //GuidebyGoogleDevelopers

@@ -72,6 +72,7 @@ class News : Fragment(), NewsItemClicked {
         recycleView.adapter=mAdapter
         mActivity=(activity as MainActivity)
 
+
         // Scroll Check Handle
 //        val array = arrayOf(1)
 
@@ -96,13 +97,13 @@ class News : Fragment(), NewsItemClicked {
         return binding.root
     }
 
-    private fun showToolbar() {
-        mActivity.binding.toolbarLayout.visibility=View.VISIBLE
-    }
-
-    private fun hideToolbar() {
-        mActivity.binding.toolbarLayout.visibility=View.GONE
-    }
+//    private fun showToolbar() {
+//        mActivity.binding.toolbarLayout.visibility=View.VISIBLE
+//    }
+//
+//    private fun hideToolbar() {
+//        mActivity.binding.toolbarLayout.visibility=View.GONE
+//    }
 
     companion object {
         /**

@@ -17,16 +17,15 @@
         // ///     default splash screen hide
         <item name="android:windowIsTranslucent">true</item>
 
-
-        <item name="android:actionButtonStyle"> @style/ActionButton</item>
+        <item name="android:actionButtonStyle">@style/ActionButton</item>
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="ActionButton" parent="@android:style/Widget.Holo.Light.ActionButton">
+    <style name="ActionButton" parent="Widget.AppCompat.ActionButton">
         <item name="android:minWidth">0dp</item>
         <item name="android:paddingLeft">0dp</item>
         <item name="android:paddingRight">0dp</item>
-        <item name="android:drawablePadding">0dp</item>
+        <item name="android:drawablePadding">-10dp</item>
     </style>
 
 </resources>
