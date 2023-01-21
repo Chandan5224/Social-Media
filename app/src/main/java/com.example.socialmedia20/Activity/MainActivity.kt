@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         binding.tabLayout.getTabAt(1)?.setIcon(R.drawable.ic_memes)
         binding.tabLayout.getTabAt(2)?.setIcon(R.drawable.ic_news)
         binding.tabLayout.tabGravity=TabLayout.GRAVITY_FILL
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

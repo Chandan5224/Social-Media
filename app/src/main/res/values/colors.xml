@@ -10,4 +10,5 @@
     <color name="green">#2FFF00</color>
     <color name="share">#F40556</color>
     <color name="next">#14EC1E</color>
+    <color name="shimmer_color">#B1B1B1</color>
 </resources>

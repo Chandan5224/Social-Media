@@ -46,9 +46,7 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
         viewHolder.likeButton.setOnClickListener {
             listener.onLikeClicked(snapshots.getSnapshot(viewHolder.adapterPosition).id)
         }
-        viewHolder.itemView.setOnClickListener {
-            listener.onPostClicked(viewHolder.image)
-        }
+
         return viewHolder
     }
 
@@ -69,15 +67,14 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
         }else{
             holder.likeButton.setImageDrawable(ContextCompat.getDrawable(holder.likeButton.context,R.drawable.ic_unliked))
         }
-        holder.itemView.findViewById<ProgressBar>(R.id.proBarHome)?.visibility=View.GONE
 
     }
 }
 
 interface IPostAdapter{
     fun onLikeClicked(postId:String)
-    fun onPostClicked(imageView: ImageView)
 }
+
 
 
 

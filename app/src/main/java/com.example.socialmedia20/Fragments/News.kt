@@ -134,6 +134,11 @@ class News : Fragment(), NewsItemClicked {
             url,
             null,
             Response.Listener {
+
+                binding.shimmerNews.stopShimmer()
+                binding.shimmerNews.visibility=View.GONE
+                binding.newsView.visibility=View.VISIBLE
+
                 val newsJsonArray = it.getJSONArray("articles")
                 val newsArray = ArrayList<MainData>()
                 for(i in 0 until newsJsonArray.length()) {

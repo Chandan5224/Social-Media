@@ -95,7 +95,7 @@ class SignInActivity : AppCompatActivity() {
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         binding.signINBtn.visibility = View.GONE
-        binding.proBar.visibility = View.VISIBLE
+        binding.proBarGgg.visibility = View.VISIBLE
         GlobalScope.launch(Dispatchers.IO) {
             val auth = auth.signInWithCredential(credential).await()
             val firebaseUser = auth.user
@@ -118,7 +118,7 @@ class SignInActivity : AppCompatActivity() {
             finish()
         } else {
             binding.signINBtn.visibility = View.VISIBLE
-            binding.proBar.visibility = View.GONE
+            binding.proBarGgg.visibility = View.GONE
         }
     }
 

@@ -3,19 +3,19 @@ package com.example.socialmedia20.Fragments
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +24,11 @@ import com.example.socialmedia20.Adapters.PostAdapter
 import com.example.socialmedia20.Data.Post
 import com.example.socialmedia20.Data.PostDao
 import com.example.socialmedia20.databinding.FragmentTrendingBinding
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
+import java.net.URL
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -37,6 +41,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [Home.newInstance] factory method to
  * create an instance of this fragment.
  */
+
 class Home : Fragment(), IPostAdapter {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -46,6 +51,7 @@ class Home : Fragment(), IPostAdapter {
     lateinit var binding: FragmentTrendingBinding
     private lateinit var mAdapter: PostAdapter
     private lateinit var postDao: PostDao
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +68,7 @@ class Home : Fragment(), IPostAdapter {
     ): View? {
         // Inflate the layout for this fragment
         binding= FragmentTrendingBinding.inflate(layoutInflater)
+
         setUpRecyclerView()
         return binding.root
     }
@@ -107,6 +114,7 @@ class Home : Fragment(), IPostAdapter {
     override fun onStart() {
         super.onStart()
         mAdapter.startListening()
+
     }
 
     override fun onStop() {
@@ -136,31 +144,6 @@ class Home : Fragment(), IPostAdapter {
 
     override fun onLikeClicked(postId: String) {
         postDao.updateLikes(postId)
-    }
-
-    override fun onPostClicked(imageView: ImageView) {
-
-        val mBitmap = imageView!!.drawable as BitmapDrawable
-        val bitmap = mBitmap.bitmap
-        val contentResolver = requireActivity().contentResolver
-        val pat = MediaStore.Images.Media.insertImage(contentResolver, bitmap, null, null)
-        val builder = Dialog(binding.root.context)
-        builder.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        builder.getWindow()!!.setBackgroundDrawable(
-            ColorDrawable(Color.TRANSPARENT)
-        )
-        builder.setOnDismissListener(DialogInterface.OnDismissListener {
-            //nothing;
-        })
-        val imageView = ImageView(binding.root.context)
-        imageView.setImageURI(Uri.parse(pat))
-        builder.addContentView(
-            imageView, RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-        )
-        builder.show()
     }
 
 }

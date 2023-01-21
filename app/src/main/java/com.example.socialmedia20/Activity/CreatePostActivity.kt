@@ -9,10 +9,12 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.example.socialmedia20.Data.PostDao
+import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.ActivityCreatePostBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -58,7 +60,7 @@ class CreatePostActivity : AppCompatActivity() {
         }
 
         binding.backBtn.setOnClickListener {
-            finish()
+            onBackPressed()
         }
 
         binding.postBtn.setOnClickListener {
@@ -84,7 +86,6 @@ class CreatePostActivity : AppCompatActivity() {
 
     }
 
-
     private fun requestPermission() {
         //GuidebyGoogleDevelopers
         if (ContextCompat.checkSelfPermission(
@@ -94,6 +95,39 @@ class CreatePostActivity : AppCompatActivity() {
             PackageManager.PERMISSION_GRANTED
         ){
             requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 100)
+        }
+    }
+
+    override fun onBackPressed() {
+
+        if(binding.postInput.text.isNotEmpty()) {
+            val builder = AlertDialog.Builder(this)
+            //set title for alert dialog
+            builder.setTitle(R.string.dialogTitle)
+            //set message for alert dialog
+            builder.setMessage(R.string.dialogMessage)
+            builder.setIcon(android.R.drawable.ic_dialog_alert)
+
+            //performing positive action
+            builder.setPositiveButton("Yes") { dialogInterface, which ->
+                finish()
+            }
+            //performing cancel action
+            builder.setNeutralButton("Cancel") { dialogInterface, which ->
+
+            }
+            //performing negative action
+//            builder.setNegativeButton("No"){dialogInterface, which ->
+//                Toast.makeText(applicationContext,"clicked No",Toast.LENGTH_LONG).show()
+//            }
+            // Create the AlertDialog
+            val alertDialog: AlertDialog = builder.create()
+            // Set other dialog properties
+            alertDialog.setCancelable(false)
+            alertDialog.show()
+        }else
+        {
+            finish()
         }
     }
 }

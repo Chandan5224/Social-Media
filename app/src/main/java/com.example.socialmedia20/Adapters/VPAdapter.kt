@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.socialmedia20.Adapters
 
 import androidx.fragment.app.Fragment
