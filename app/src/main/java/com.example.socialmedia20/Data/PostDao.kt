@@ -20,42 +20,55 @@ import java.util.*
 import kotlin.math.log
 
 class PostDao {
-     val db= FirebaseFirestore.getInstance()
-     val postCollection=db.collection("posts")
-    val auth=Firebase.auth
+    val db = FirebaseFirestore.getInstance()
+    val postCollection = db.collection("posts")
+    val auth = Firebase.auth
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun addPost(text: String,imageUrl:String)
-    {
+    fun addPost(text: String, imageUrl: String) {
         GlobalScope.launch {
             // get current user
             val currentUserId = auth.currentUser!!.uid
             val userDao = UserDao()
             val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
             val currentTime = System.currentTimeMillis()
-            val post = Post(text, user, currentTime,imageUrl)
+            val post = Post(text, user, currentTime, imageUrl)
             postCollection.document().set(post) /// set new post
         }
     }
-    fun getPostByID(postId: String): Task<DocumentSnapshot>
-    {
-        return postCollection.document(postId).get()
-    }
-    fun updateLikes(postId:String)
-    {
+
+    fun updatePost(text: String, imageUrl: String, postId: String) {
         GlobalScope.launch {
             val currentUserId = auth.currentUser!!.uid
-            val post=getPostByID(postId).await().toObject(Post::class.java)!!
-            val isLiked= post.likedBy.contains(currentUserId)
+            val userDao = UserDao()
+            val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
+            val currentTime = System.currentTimeMillis()
+            val post = getPostByID(postId).await().toObject(Post::class.java)!!
+            val nPost = Post(text, user, currentTime, imageUrl,post.likedBy)
+            postCollection.document(postId).set(nPost)
+        }
+    }
 
-            if(isLiked)
-            {
+    fun getPostByID(postId: String): Task<DocumentSnapshot> {
+        return postCollection.document(postId).get()
+    }
+
+    fun updateLikes(postId: String) {
+        GlobalScope.launch {
+            val currentUserId = auth.currentUser!!.uid
+            val post = getPostByID(postId).await().toObject(Post::class.java)!!
+            val isLiked = post.likedBy.contains(currentUserId)
+
+            if (isLiked) {
                 post.likedBy.remove(currentUserId)
-            }else{
+            } else {
                 post.likedBy.add(currentUserId)
             }
             postCollection.document(postId).set(post) // for update post
         }
+    }
 
+    fun deletePost(postId: String) {
+        postCollection.document(postId).delete()
     }
 }

@@ -2,10 +2,14 @@ package com.example.socialmedia20.Activity
 
 import android.content.ComponentName
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.example.socialmedia20.Data.User
@@ -41,7 +45,9 @@ class SignInActivity : AppCompatActivity() {
         binding=ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
+        if (!checkForInternet(binding.root.context)) {
+            Toast.makeText(this,"Connect To The Internet",Toast.LENGTH_LONG).show()
+        }
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         // Configure sign-in to request the user's ID, email address, and basic
@@ -122,6 +128,25 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
+    private fun checkForInternet(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        // if the android version is equal to M
+        // or greater we need to use the
+        // NetworkCapabilities to check what type of
+        // network has the internet connection
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Returns a Network object corresponding to
+            // the currently active default data network.
+            val network = connectivityManager.activeNetwork ?: return false
+            return true
+        } else {
+            // if the android version is below M
+            @Suppress("DEPRECATION") val networkInfo =
+                connectivityManager.activeNetworkInfo ?: return false
+            @Suppress("DEPRECATION")
+            return networkInfo.isConnected
+        }
     }
+
 }

@@ -9,9 +9,9 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardUseCompatPadding="true"
-        app:cardElevation="5dp"
-        app:cardCornerRadius="5dp">
+        app:cardCornerRadius="10dp"
+        app:cardUseCompatPadding="true">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -28,11 +28,11 @@
                 android:id="@+id/itemTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
                 android:layout_margin="5dp"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:text="Title" />
+                android:maxLines="2"
+                android:text="Title"
+                android:textColor="@color/black"
+                android:textSize="18sp"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -42,10 +42,10 @@
                     android:id="@+id/authorTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
                     android:maxLength="20"
                     android:text="Title"
-                    android:layout_marginLeft="5dp"
-                    android:textStyle="bold"
+                    android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -57,7 +57,7 @@
                     android:layout_marginStart="20dp"
                     android:maxLength="10"
                     android:text="Time"
-                    android:textStyle="bold"
+                    android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/authorTitle"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -67,6 +67,7 @@
                     android:layout_width="38dp"
                     android:layout_height="36dp"
                     android:scaleType="center"
+                    android:layout_marginEnd="5dp"
                     android:src="@drawable/ic_baseline_share"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

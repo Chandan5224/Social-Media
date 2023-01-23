@@ -1,5 +1,6 @@
 package com.example.socialmedia20.Fragments
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
@@ -11,6 +12,7 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -23,7 +25,8 @@ import com.example.socialmedia20.Adapters.IPostAdapter
 import com.example.socialmedia20.Adapters.PostAdapter
 import com.example.socialmedia20.Data.Post
 import com.example.socialmedia20.Data.PostDao
-import com.example.socialmedia20.databinding.FragmentTrendingBinding
+import com.example.socialmedia20.R
+import com.example.socialmedia20.databinding.FragmentHomeBinding
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import kotlinx.coroutines.*
@@ -48,7 +51,7 @@ class Home : Fragment(), IPostAdapter {
     private var param2: String? = null
 
     private lateinit var recycleView : RecyclerView
-    lateinit var binding: FragmentTrendingBinding
+    lateinit var binding: FragmentHomeBinding
     private lateinit var mAdapter: PostAdapter
     private lateinit var postDao: PostDao
 
@@ -67,12 +70,20 @@ class Home : Fragment(), IPostAdapter {
         savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
-        binding= FragmentTrendingBinding.inflate(layoutInflater)
+        binding= FragmentHomeBinding.inflate(layoutInflater)
 
         setUpRecyclerView()
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            val postCollection=postDao.postCollection
+            val query=postCollection.orderBy("createdAt",com.google.firebase.firestore.Query.Direction.DESCENDING)
+            val recyclerViewOptions=FirestoreRecyclerOptions.Builder<Post>().setQuery(query,Post::class.java).build()
+            mAdapter.updateOptions(recyclerViewOptions)
+
+            binding.swipeRefreshLayout.isRefreshing=false
+        }
         return binding.root
     }
-
 
     private fun setUpRecyclerView() {
         postDao=PostDao()
@@ -114,7 +125,6 @@ class Home : Fragment(), IPostAdapter {
     override fun onStart() {
         super.onStart()
         mAdapter.startListening()
-
     }
 
     override fun onStop() {

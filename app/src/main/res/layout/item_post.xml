@@ -4,12 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp">
+    android:layout_marginBottom="10dp">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="16dp"
         android:paddingTop="16dp">
+
 
         <ImageView
             android:id="@+id/userImage"
@@ -22,7 +24,7 @@
 
         <TextView
             android:id="@+id/userName"
-            android:layout_width="0dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
             android:layout_marginRight="16dp"
@@ -30,8 +32,8 @@
             android:textColor="#212121"
             android:textSize="16sp"
             android:textStyle="bold"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toRightOf="@+id/userImage"
-            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@+id/userImage" />
 
         <TextView
@@ -40,11 +42,20 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
             android:layout_marginTop="4dp"
-            android:layout_marginRight="16dp"
             android:text="20/1/2023"
             app:layout_constraintLeft_toRightOf="@+id/userImage"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintRight_toRightOf="@id/userName"
             app:layout_constraintTop_toBottomOf="@+id/userName" />
+
+        <ImageView
+            android:id="@+id/menus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_baseline_more_vert_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/postTitle"
@@ -56,7 +67,6 @@
             android:text="Hello"
             android:textColor="#212121"
             android:textSize="16sp"
-            android:textStyle="bold"
             android:maxLines="2"
             android:ellipsize="end"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -75,14 +85,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/postTitle"
-            tools:srcCompat="@drawable/ic_launcher_background" />
+            tools:srcCompat="@drawable/kartik" />
 
         <ImageView
             android:id="@+id/likeButton"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="4dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_marginTop="8dp"
+            android:src="@drawable/ic_unliked"
             app:layout_constraintStart_toStartOf="@+id/userImage"
             app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
@@ -90,13 +100,44 @@
             android:id="@+id/likeCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
+            android:layout_marginLeft="10dp"
+            android:visibility="gone"
             android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="@id/likeButton"
             app:layout_constraintLeft_toRightOf="@id/likeButton"
             app:layout_constraintTop_toTopOf="@id/likeButton" />
 
+        <ImageView
+            android:id="@+id/cmtButton"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_outline_comment"
+            app:layout_constraintStart_toEndOf="@+id/likeCount"
+            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
+        <ImageView
+            android:id="@+id/shareButton"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_baseline_share"
+            app:layout_constraintStart_toEndOf="@+id/cmtButton"
+            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+
+
+        <ImageView
+            android:id="@+id/saveButton"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_baseline_bookmark_border_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

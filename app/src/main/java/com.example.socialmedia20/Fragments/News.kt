@@ -155,7 +155,6 @@ class News : Fragment(), NewsItemClicked {
                 mAdapter.updateNews(newsArray)
             },
             Response.ErrorListener {
-
             }
         )
         {
