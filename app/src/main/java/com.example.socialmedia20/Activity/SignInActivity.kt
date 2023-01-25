@@ -1,6 +1,6 @@
 package com.example.socialmedia20.Activity
 
-import android.content.ComponentName
+
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
@@ -63,7 +63,6 @@ class SignInActivity : AppCompatActivity() {
         binding.signINBtn.setOnClickListener {
             signIn()
         }
-
     }
 
     override fun onStart() {
@@ -102,6 +101,10 @@ class SignInActivity : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         binding.signINBtn.visibility = View.GONE
         binding.proBarGgg.visibility = View.VISIBLE
+        binding.welText.visibility=View.GONE
+        binding.tagLine.visibility=View.GONE
+        binding.lottieAnimationView.visibility=View.GONE
+
         GlobalScope.launch(Dispatchers.IO) {
             val auth = auth.signInWithCredential(credential).await()
             val firebaseUser = auth.user
@@ -125,6 +128,9 @@ class SignInActivity : AppCompatActivity() {
         } else {
             binding.signINBtn.visibility = View.VISIBLE
             binding.proBarGgg.visibility = View.GONE
+            binding.welText.visibility=View.VISIBLE
+            binding.tagLine.visibility=View.VISIBLE
+            binding.lottieAnimationView.visibility=View.VISIBLE
         }
     }
 

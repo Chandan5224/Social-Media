@@ -1,23 +1,18 @@
 package com.example.socialmedia20.Fragments
 
-import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.Toast
+import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,11 +22,10 @@ import com.example.socialmedia20.Data.Post
 import com.example.socialmedia20.Data.PostDao
 import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.FragmentHomeBinding
-import com.facebook.shimmer.ShimmerFrameLayout
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import kotlinx.coroutines.*
-import kotlinx.coroutines.tasks.await
-import java.net.URL
+import com.orhanobut.dialogplus.DialogPlus
+import com.orhanobut.dialogplus.ViewHolder
+import java.util.Objects
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -154,6 +148,33 @@ class Home : Fragment(), IPostAdapter {
 
     override fun onLikeClicked(postId: String) {
         postDao.updateLikes(postId)
+    }
+
+    override fun onSharePost(post: Post, imageView: ImageView) {
+        val mBitmap = imageView.drawable as BitmapDrawable
+        val bitmap = mBitmap.bitmap
+        val contentResolver = requireActivity().contentResolver
+        val pat = MediaStore.Images.Media.insertImage(contentResolver, bitmap, null, null)
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "image/*"
+        intent.type = "text/*"
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(pat))
+        intent.putExtra(Intent.EXTRA_TEXT, "${post.text}\nPost By : ${post.createdBy.displayName}")
+        val chooser = Intent.createChooser(intent, "Share this meme using....")
+        startActivity(chooser, null)
+
+    }
+
+    override fun onComment(post: Post) {
+        val dialogPlus = DialogPlus.newDialog(binding.root.context)
+            .setContentHolder(ViewHolder(R.layout.edit_post))
+            .setExpanded(true,binding.root.height)
+            .setCancelable(true)
+            .create()
+        dialogPlus.holderView.findViewById<TextView>(R.id.title_).text="Comments"
+        dialogPlus.show()
+
     }
 
 }

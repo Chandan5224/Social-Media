@@ -12,4 +12,5 @@
     <color name="next">#14EC1E</color>
     <color name="shimmer_color">#B1B1B1</color>
     <color name="mainColor">#9457E0</color>
+    <color name="unSelected">#757475</color>
 </resources>

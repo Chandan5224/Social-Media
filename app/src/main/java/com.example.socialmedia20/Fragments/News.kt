@@ -184,7 +184,7 @@ class News : Fragment(), NewsItemClicked {
         // for checking the urlToImage is it coming or not?
         if(imageView.height>10)
         {
-            val mBitmap= imageView!!.drawable as BitmapDrawable
+            val mBitmap= imageView.drawable as BitmapDrawable
             val bitmap=mBitmap.bitmap
             val contentResolver = requireActivity().contentResolver
             val pat= MediaStore.Images.Media.insertImage(contentResolver,bitmap,item.title,null)

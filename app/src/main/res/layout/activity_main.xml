@@ -30,8 +30,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/aclonica"
-                android:text="Social Media"
-                android:textColor="#9457E0"
+                android:text="Social "
+                android:textColor="@color/black"
+                android:textSize="25sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/aclonica"
+                android:text="Media"
+                android:textColor="@color/mainColor"
                 android:textSize="25sp" />
 
 
@@ -47,19 +54,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
         app:tabBackground="@color/white"
-        app:tabIconTint="#9457E0"
         app:tabIndicatorColor="#9457E0">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
+            android:icon="@drawable/ic_baseline_home_24"
             android:layout_height="wrap_content" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
+            android:icon="@drawable/ic_baseline_tag_faces_24"
             android:layout_height="wrap_content" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
+            android:icon="@drawable/ic_news"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:icon="@drawable/ic_account_circle"
             android:layout_height="wrap_content" />
     </com.google.android.material.tabs.TabLayout>
 

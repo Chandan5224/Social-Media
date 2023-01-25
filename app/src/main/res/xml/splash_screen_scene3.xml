@@ -22,11 +22,11 @@
                android:scaleX="0.8"
                android:scaleY="0.8" />
            <KeyAttribute
-               motion:motionTarget="@+id/textView"
+               motion:motionTarget="@+id/welText"
                motion:framePosition="48"
                android:alpha="0.0" />
            <KeyAttribute
-               motion:motionTarget="@+id/textView"
+               motion:motionTarget="@+id/welText"
                motion:framePosition="68"
                android:alpha="1.0" />
            <KeyAttribute
@@ -47,7 +47,7 @@
 
     <ConstraintSet android:id="@+id/start">
         <Constraint
-            android:id="@+id/textView"
+            android:id="@+id/welText"
             motion:layout_constraintEnd_toEndOf="parent"
             android:layout_width="300dp"
             android:layout_height="60dp"
@@ -69,7 +69,7 @@
 
     <ConstraintSet android:id="@+id/end">
         <Constraint
-            android:id="@+id/textView"
+            android:id="@+id/welText"
             motion:layout_constraintEnd_toEndOf="parent"
             android:layout_width="300dp"
             android:layout_height="60dp"

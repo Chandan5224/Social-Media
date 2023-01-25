@@ -21,8 +21,10 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.contentValuesOf
 import androidx.core.view.isVisible
+import com.airbnb.lottie.LottieAnimationView
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
@@ -69,17 +71,17 @@ class Memes : Fragment(){
             LoadMeme()
         }
         share.setOnClickListener {
-            val bar=root.findViewById<ProgressBar>(R.id.proBar)
+            val bar=root.findViewById<LottieAnimationView>(R.id.proBar)
             if(!bar.isVisible) {
                 // for image
                 val mBitmap = image!!.drawable as BitmapDrawable
                 val bitmap = mBitmap.bitmap
                 val contentResolver = requireActivity().contentResolver
                 val pat = MediaStore.Images.Media.insertImage(contentResolver, bitmap, null, null)
-
                 val intent = Intent(Intent.ACTION_SEND)
                 intent.type = "image/*"
                 intent.type = "text/*"
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(pat))
                 intent.putExtra(Intent.EXTRA_TEXT, "Hey check out this cool meme!!")
                 val chooser = Intent.createChooser(intent, "Share this meme using....")
@@ -105,7 +107,7 @@ class Memes : Fragment(){
     {
         val queue = Volley.newRequestQueue(context)
         val url = "https://meme-api.com/gimme"
-        val  Bar=root.findViewById<ProgressBar>(R.id.proBar)
+        val  Bar=root.findViewById<LottieAnimationView>(R.id.proBar)
         Bar.visibility=View.VISIBLE
 
 // Request a string response from the provided URL.
