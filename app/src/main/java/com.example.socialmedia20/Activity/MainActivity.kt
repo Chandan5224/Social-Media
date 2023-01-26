@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.graphics.PorterDuff
 import android.net.ConnectivityManager
 import android.net.Uri
@@ -12,14 +11,13 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
+import android.view.WindowManager
 import android.widget.*
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.get
 import com.bumptech.glide.Glide
 import com.example.socialmedia20.Adapters.VPAdapter
 import com.example.socialmedia20.Data.PostDao
@@ -74,10 +72,6 @@ class MainActivity : AppCompatActivity() {
         }
         // Call
         setupViewPager()
-
-        if (binding.viewPager.currentItem > 0 && binding.viewPager.currentItem < 4) {
-            binding.toolbar.visibility = View.GONE
-        }
     }
 
 
@@ -92,10 +86,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.viewPager.adapter = vpAdapter
-        binding.tabLayout.getTabAt(0)!!.setIcon(R.drawable.ic_baseline_home_24)
-        binding.tabLayout.getTabAt(1)!!.setIcon(R.drawable.ic_baseline_tag_faces_24)
-        binding.tabLayout.getTabAt(2)!!.setIcon(R.drawable.ic_news)
-        binding.tabLayout.getTabAt(3)!!.setIcon(R.drawable.ic_account_circle)
+        binding.tabLayout.getTabAt(0)!!.setIcon(R.drawable.ic_baseline_home_24).tag="home"
+        binding.tabLayout.getTabAt(1)!!.setIcon(R.drawable.ic_baseline_tag_faces_24).tag="meme"
+        binding.tabLayout.getTabAt(2)!!.setIcon(R.drawable.ic_news).tag="news"
+        binding.tabLayout.getTabAt(3)!!.setIcon(R.drawable.ic_account_circle).tag="account"
         binding.tabLayout.tabGravity = TabLayout.GRAVITY_FILL
 
         binding.tabLayout.getTabAt(0)!!.icon!!.setColorFilter(
@@ -119,6 +113,10 @@ class MainActivity : AppCompatActivity() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val tabIconColor = ContextCompat.getColor(this@MainActivity, R.color.mainColor)
                 tab!!.icon!!.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN)
+                if(tab.tag=="home")
+                    supportActionBar!!.show()
+                else
+                    supportActionBar!!.hide()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -128,7 +126,6 @@ class MainActivity : AppCompatActivity() {
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
             }
-
         })
 
     }

@@ -1,29 +1,19 @@
 package com.example.socialmedia20.Fragments
 
-import android.app.Application
-import android.content.ContentResolver
 import android.content.Intent
-import android.content.pm.ResolveInfo
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
-import android.provider.ContactsContract.CommonDataKinds.Website.URL
 import android.provider.MediaStore
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
-import android.view.animation.AnimationUtils.loadAnimation
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.core.content.contentValuesOf
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import com.airbnb.lottie.LottieAnimationView
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
@@ -34,8 +24,6 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.example.socialmedia20.R
-import java.net.URL
-import com.google.android.material.animation.AnimationUtils as Ani
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -60,9 +48,11 @@ class Memes : Fragment(){
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?, ): View? {
+        savedInstanceState: Bundle?,
+    ): View? {
         root= inflater.inflate(R.layout.fragment_memes, container, false) as ViewGroup
         LoadMeme()
+
         val next=root.findViewById<Button>(R.id.next_Button)
         val share=root.findViewById<Button>(R.id.shareBtn)
         val image=root.findViewById<ImageView>(R.id.memeImage)
@@ -88,6 +78,7 @@ class Memes : Fragment(){
                 startActivity(chooser, null)
             }
         }
+
         // Inflate the layout for this fragment
         return root
     }
@@ -114,7 +105,7 @@ class Memes : Fragment(){
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
             { response ->
                 currentImageUrl=response.getString("url")
-                val meme =requireView().findViewById<ImageView>(R.id.memeImage)
+                val meme =root.findViewById<ImageView>(R.id.memeImage)
                 Glide.with(this).load(currentImageUrl).listener(object : RequestListener<Drawable>{
                     override fun onLoadFailed(
                         e: GlideException?,
