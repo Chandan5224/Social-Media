@@ -275,7 +275,7 @@ class MainActivity : AppCompatActivity() {
             allertShow("Do you want to discard changes ?", "Yes", "No", dialogPlus)
         else if (dialogPlus.isShowing)
             dialogPlus.dismiss()
-        else if (binding.viewPager.currentItem == 1 || binding.viewPager.currentItem == 2)
+        else if (binding.viewPager.currentItem in 1..3)
             binding.viewPager.currentItem = 0
         else {
             this.cacheDir.deleteRecursively()

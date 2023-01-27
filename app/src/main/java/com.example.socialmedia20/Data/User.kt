@@ -7,4 +7,7 @@ data class User(
     val displayName: String?="",
     val imageUrl: String ="",
     val phoneNo:String="",
-    val emailId:String="")
+    val emailId:String="",
+    val save: ArrayList<String> = ArrayList(),
+    val post: ArrayList<String> = ArrayList()
+    )

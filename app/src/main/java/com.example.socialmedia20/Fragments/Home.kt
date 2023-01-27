@@ -63,7 +63,7 @@ class Home : Fragment(), IPostAdapter {
         savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
-        binding= FragmentHomeBinding.inflate(layoutInflater)
+        binding= FragmentHomeBinding.inflate(layoutInflater,container,false)
 
         setUpRecyclerView()
 

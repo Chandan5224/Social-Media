@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
+import com.example.socialmedia20.Adapters.PostAdapter.PostViewHolder
 import com.example.socialmedia20.Data.Post
 import com.example.socialmedia20.Data.PostDao
 import com.example.socialmedia20.Data.Utils
@@ -61,10 +62,9 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        val viewHolder = PostViewHolder(
+        return PostViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_post, parent, false)
         )
-        return viewHolder
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int, model: Post) {
