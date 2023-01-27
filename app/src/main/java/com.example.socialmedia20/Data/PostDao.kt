@@ -14,6 +14,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -21,21 +22,32 @@ import java.util.*
 import kotlin.math.log
 
 class PostDao {
-    val db = FirebaseFirestore.getInstance()
+    private val db = FirebaseFirestore.getInstance()
     val postCollection = db.collection("posts")
-    val auth = Firebase.auth
+    private val userCollection = db.collection("user")
+    private val auth = Firebase.auth
 
     @OptIn(DelicateCoroutinesApi::class)
     fun addPost(text: String, imageUrl: String) {
-        GlobalScope.launch {
+        GlobalScope.launch(Dispatchers.IO) {
             // get current user
             val currentUserId = auth.currentUser!!.uid
             val userDao = UserDao()
             val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
             val currentTime = System.currentTimeMillis()
-            val post = Post(text, user, currentTime, imageUrl)
-            postCollection.document().set(post) /// set new post
+            val postId=getRandomString(15)
+            user.post.add(postId)
+            val post = Post(postId,text, user, currentTime, imageUrl)
+            postCollection.document(post.uid).set(post) /// set new post
+            userDao.addUser(user)
         }
+    }
+
+    fun getRandomString(length: Int) : String {
+        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+        return (1..length)
+            .map { allowedChars.random() }
+            .joinToString("")
     }
 
     fun updatePost(text: String, imageUrl: String, postId: String) {
@@ -45,7 +57,7 @@ class PostDao {
             val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
             val currentTime = System.currentTimeMillis()
             val post = getPostByID(postId).await().toObject(Post::class.java)!!
-            val nPost = Post(text, user, currentTime, imageUrl,post.likedBy)
+            val nPost = Post(post.uid,text, user, currentTime, imageUrl,post.likedBy)
             postCollection.document(postId).set(nPost)
         }
     }
