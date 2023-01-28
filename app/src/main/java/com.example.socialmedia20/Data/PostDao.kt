@@ -24,8 +24,8 @@ import kotlin.math.log
 class PostDao {
     private val db = FirebaseFirestore.getInstance()
     val postCollection = db.collection("posts")
-    private val userCollection = db.collection("user")
-    private val auth = Firebase.auth
+    private val userCollection = db.collection("users")
+     val auth = Firebase.auth
 
     @OptIn(DelicateCoroutinesApi::class)
     fun addPost(text: String, imageUrl: String) {
@@ -35,15 +35,15 @@ class PostDao {
             val userDao = UserDao()
             val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
             val currentTime = System.currentTimeMillis()
-            val postId=getRandomString(15)
+            val postId = getRandomString(15)
             user.post.add(postId)
-            val post = Post(postId,text, user, currentTime, imageUrl)
+            val post = Post(postId, text, user, currentTime, imageUrl)
             postCollection.document(post.uid).set(post) /// set new post
             userDao.addUser(user)
         }
     }
 
-    fun getRandomString(length: Int) : String {
+    fun getRandomString(length: Int): String {
         val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
         return (1..length)
             .map { allowedChars.random() }
@@ -57,7 +57,7 @@ class PostDao {
             val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
             val currentTime = System.currentTimeMillis()
             val post = getPostByID(postId).await().toObject(Post::class.java)!!
-            val nPost = Post(post.uid,text, user, currentTime, imageUrl,post.likedBy)
+            val nPost = Post(post.uid, text, user, currentTime, imageUrl, post.likedBy)
             postCollection.document(postId).set(nPost)
         }
     }
@@ -78,6 +78,19 @@ class PostDao {
                 post.likedBy.add(currentUserId)
             }
             postCollection.document(postId).set(post) // for update post
+        }
+    }
+
+    fun updateSave(post: Post) {
+        GlobalScope.launch {
+            // get current user
+            val currentUserId = auth.currentUser!!.uid
+            val userDao = UserDao()
+            val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
+            val isSave = user.save.contains(post.uid)
+            if(!isSave)
+                user.save.add(post.uid)
+            userDao.addUser(user)
         }
     }
 

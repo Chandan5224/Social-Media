@@ -84,7 +84,7 @@ class Home : Fragment(), IPostAdapter {
         val query=postCollection.orderBy("createdAt",com.google.firebase.firestore.Query.Direction.DESCENDING)
         val recyclerViewOptions=FirestoreRecyclerOptions.Builder<Post>().setQuery(query,Post::class.java).build()
         recycleView=binding.trendingView
-        mAdapter = PostAdapter(recyclerViewOptions,this@Home)
+        mAdapter = PostAdapter(recyclerViewOptions,this@Home,false)
         recycleView.adapter=mAdapter
         recycleView.layoutManager=LinearLayoutManagerWrapper(context,LinearLayoutManager.VERTICAL,false)
     // recycleView.layoutManager=LinearLayoutManager(context)
@@ -174,6 +174,10 @@ class Home : Fragment(), IPostAdapter {
         dialogPlus.holderView.findViewById<TextView>(R.id.title_).text="Comments"
         dialogPlus.show()
 
+    }
+
+    override fun onSave(post: Post) {
+        postDao.updateSave(post)
     }
 
 }

@@ -1,13 +1,18 @@
 package com.example.socialmedia20.Fragments
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,8 +21,11 @@ import com.example.socialmedia20.Adapters.IPostAdapter
 import com.example.socialmedia20.Adapters.PostAdapter
 import com.example.socialmedia20.Data.Post
 import com.example.socialmedia20.Data.PostDao
+import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.FragmentAccountBinding
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.orhanobut.dialogplus.DialogPlus
+import com.orhanobut.dialogplus.ViewHolder
 import kotlinx.coroutines.yield
 
 // TODO: Rename parameter arguments, choose names that match
@@ -89,12 +97,12 @@ class Account : Fragment(), IPostAdapter {
         val recyclerViewOptions =
             FirestoreRecyclerOptions.Builder<Post>().setQuery(query, Post::class.java).build()
         recycleView = binding.postRecycleView
-        mAdapter = PostAdapter(recyclerViewOptions, this@Account)
+        mAdapter = PostAdapter(recyclerViewOptions, this@Account,true)
         recycleView.adapter = mAdapter
         recycleView.layoutManager =
             LinearLayoutManagerWrapper(context, LinearLayoutManager.VERTICAL, false)
-        // recycleView.layoutManager=LinearLayoutManager(context)
-//
+         recycleView.layoutManager=LinearLayoutManager(context)
+
         binding.scrollView.setOnScrollChangeListener { view, i, i2, i3, i4 ->
             val v=binding.scrollView.getChildAt(binding.scrollView.childCount-1) as View
             val topDetector = binding.scrollView.scrollY
@@ -117,7 +125,6 @@ class Account : Fragment(), IPostAdapter {
             reverseLayout
         ) {
         }
-
         constructor(
             context: Context?,
             attrs: AttributeSet?,
@@ -143,15 +150,38 @@ class Account : Fragment(), IPostAdapter {
     }
 
     override fun onLikeClicked(postId: String) {
-
+        postDao.updateLikes(postId)
     }
 
     override fun onSharePost(post: Post, imageView: ImageView) {
+        val mBitmap = imageView.drawable as BitmapDrawable
+        val bitmap = mBitmap.bitmap
+        val contentResolver = requireActivity().contentResolver
+        val pat = MediaStore.Images.Media.insertImage(contentResolver, bitmap, null, null)
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "image/*"
+        intent.type = "text/*"
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(pat))
+        intent.putExtra(Intent.EXTRA_TEXT, "${post.text}\nPost By : ${post.createdBy.displayName}")
+        val chooser = Intent.createChooser(intent, "Share this meme using....")
+        startActivity(chooser, null)
 
     }
 
     override fun onComment(post: Post) {
+        val dialogPlus = DialogPlus.newDialog(binding.root.context)
+            .setContentHolder(ViewHolder(R.layout.edit_post))
+            .setExpanded(true,binding.root.height)
+            .setCancelable(true)
+            .create()
+        dialogPlus.holderView.findViewById<TextView>(R.id.title_).text="Comments"
+        dialogPlus.show()
 
+    }
+
+    override fun onSave(post: Post) {
+        postDao.updateSave(post)
     }
 
 }

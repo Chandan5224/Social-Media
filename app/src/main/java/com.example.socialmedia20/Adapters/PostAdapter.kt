@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.example.socialmedia20.Adapters.PostAdapter.PostViewHolder
 import com.example.socialmedia20.Data.Post
 import com.example.socialmedia20.Data.PostDao
+import com.example.socialmedia20.Data.UserDao
 import com.example.socialmedia20.Data.Utils
 import com.example.socialmedia20.R
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
@@ -27,7 +28,7 @@ import com.orhanobut.dialogplus.DialogPlus
 import com.orhanobut.dialogplus.ViewHolder
 
 
-class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener: IPostAdapter) :
+class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener: IPostAdapter,private val check:Boolean) :
     FirestoreRecyclerAdapter<Post, PostAdapter.PostViewHolder>(
         options
     ) {
@@ -43,6 +44,7 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
         lateinit var menu: ImageView
         lateinit var shareBtn: ImageView
         lateinit var cmtBtn: ImageView
+        lateinit var saveBtn:ImageView
         lateinit var lottieAnimationView: LottieAnimationView
 
         init {
@@ -56,10 +58,10 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
             menu = itemView.findViewById(R.id.menus)
             shareBtn = itemView.findViewById(R.id.shareButton)
             cmtBtn = itemView.findViewById(R.id.cmtButton)
+            saveBtn= itemView.findViewById(R.id.saveButton)
             lottieAnimationView = itemView.findViewById(R.id.lottieAnimationView)
         }
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         return PostViewHolder(
@@ -69,6 +71,23 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int, model: Post) {
 
+        val currentUser=UserDao().auth.currentUser!!.uid
+        if(check && currentUser==model.createdBy.uid){
+            setUp(holder,position,model)
+        }else if(!check){
+            setUp(holder,position,model)
+        }
+        if(check&&currentUser!=model.createdBy.uid){
+//            holder.itemView.set
+        }
+    }
+
+    override fun onDataChanged() {
+        super.onDataChanged()
+        notifyDataSetChanged()
+    }
+
+    private fun setUp(holder: PostViewHolder, position: Int, model: Post){
         holder.postText.text = model.text
         holder.userText.text = model.createdBy.displayName
         Glide.with(holder.userImage.context).load(model.createdBy.imageUrl).circleCrop()
@@ -109,6 +128,9 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
             listener.onLikeClicked(snapshots.getSnapshot(holder.adapterPosition).id)
         }
 
+        holder.saveBtn.setOnClickListener {
+            listener.onSave(model)
+        }
 
         holder.menu.setOnClickListener {
             popupMenus(it, snapshots.getSnapshot(holder.adapterPosition).id, model)
@@ -132,12 +154,6 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
             }
 
         })
-
-    }
-
-    override fun onDataChanged() {
-        super.onDataChanged()
-        notifyDataSetChanged()
     }
 
     private fun popupMenus(view: View, postId: String, post: Post) {
@@ -214,6 +230,7 @@ interface IPostAdapter {
     fun onLikeClicked(postId: String)
     fun onSharePost(post: Post,imageView: ImageView)
     fun onComment(post: Post)
+    fun onSave(post:Post)
 }
 
 
