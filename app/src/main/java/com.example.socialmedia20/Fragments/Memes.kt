@@ -11,9 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.viewpager.widget.ViewPager
 import com.airbnb.lottie.LottieAnimationView
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
@@ -29,11 +31,11 @@ private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 
-class Memes : Fragment(){
+class Memes : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    var currentImageUrl: String ?=null
+    var currentImageUrl: String? = null
     lateinit var root: ViewGroup
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,19 +52,19 @@ class Memes : Fragment(){
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        root= inflater.inflate(R.layout.fragment_memes, container, false) as ViewGroup
+        root = inflater.inflate(R.layout.fragment_memes, container, false) as ViewGroup
         LoadMeme()
 
-        val next=root.findViewById<Button>(R.id.next_Button)
-        val share=root.findViewById<Button>(R.id.shareBtn)
-        val image=root.findViewById<ImageView>(R.id.memeImage)
+        val next = root.findViewById<Button>(R.id.next_Button)
+        val share = root.findViewById<Button>(R.id.shareBtn)
+        val image = root.findViewById<ImageView>(R.id.memeImage)
 
         next.setOnClickListener {
             LoadMeme()
         }
         share.setOnClickListener {
-            val bar=root.findViewById<LottieAnimationView>(R.id.proBar)
-            if(!bar.isVisible) {
+            val bar = root.findViewById<LottieAnimationView>(R.id.proBar)
+            if (!bar.isVisible) {
                 // for image
                 val mBitmap = image!!.drawable as BitmapDrawable
                 val bitmap = mBitmap.bitmap
@@ -79,6 +81,13 @@ class Memes : Fragment(){
             }
         }
 
+//        val callback = object : OnBackPressedCallback(true) {
+//            override fun handleOnBackPressed() {
+//                requireActivity().findViewById<ViewPager>(R.id.viewPager).currentItem = 0
+//            }
+//        }
+//        requireActivity().onBackPressedDispatcher.addCallback(callback)
+
         // Inflate the layout for this fragment
         return root
     }
@@ -94,26 +103,25 @@ class Memes : Fragment(){
             }
     }
 
-    private fun LoadMeme()
-    {
+    private fun LoadMeme() {
         val queue = Volley.newRequestQueue(context)
         val url = "https://meme-api.com/gimme"
-        val  Bar=root.findViewById<LottieAnimationView>(R.id.proBar)
-        Bar.visibility=View.VISIBLE
+        val Bar = root.findViewById<LottieAnimationView>(R.id.proBar)
+        Bar.visibility = View.VISIBLE
 
 // Request a string response from the provided URL.
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
             { response ->
-                currentImageUrl=response.getString("url")
-                val meme =root.findViewById<ImageView>(R.id.memeImage)
-                Glide.with(this).load(currentImageUrl).listener(object : RequestListener<Drawable>{
+                currentImageUrl = response.getString("url")
+                val meme = root.findViewById<ImageView>(R.id.memeImage)
+                Glide.with(this).load(currentImageUrl).listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
                         e: GlideException?,
                         model: Any?,
                         target: Target<Drawable>?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        Bar.visibility=View.GONE
+                        Bar.visibility = View.GONE
                         return false
                     }
 
@@ -124,7 +132,7 @@ class Memes : Fragment(){
                         dataSource: DataSource?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        Bar.visibility=View.GONE
+                        Bar.visibility = View.GONE
                         return false
                     }
                 }).into(meme)

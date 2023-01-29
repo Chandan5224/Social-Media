@@ -11,5 +11,5 @@
         android:id="@+id/nav_account"
         android:title="menu"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_outline_menu_24"/>
+        android:icon="@drawable/ic_account_circle"/>
 </menu>

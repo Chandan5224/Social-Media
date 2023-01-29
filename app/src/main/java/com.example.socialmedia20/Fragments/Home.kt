@@ -2,6 +2,7 @@ package com.example.socialmedia20.Fragments
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -10,12 +11,17 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.*
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
+import com.bumptech.glide.Glide
 import com.example.socialmedia20.Adapters.IPostAdapter
 import com.example.socialmedia20.Adapters.PostAdapter
 import com.example.socialmedia20.Data.Post
@@ -23,6 +29,9 @@ import com.example.socialmedia20.Data.PostDao
 import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.FragmentHomeBinding
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.orhanobut.dialogplus.DialogPlus
 import com.orhanobut.dialogplus.ViewHolder
 
@@ -43,11 +52,15 @@ class Home : Fragment(), IPostAdapter {
     private var param1: String? = null
     private var param2: String? = null
 
-    private lateinit var recycleView : RecyclerView
+    private lateinit var recycleView: RecyclerView
     lateinit var binding: FragmentHomeBinding
     private lateinit var mAdapter: PostAdapter
     private lateinit var postDao: PostDao
-
+    private lateinit var getImage: ActivityResultLauncher<String?>
+    lateinit var dialogPlus: DialogPlus
+    var check = true
+    lateinit var imageUri: Uri
+    private var imageUrl: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,31 +76,63 @@ class Home : Fragment(), IPostAdapter {
         savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
-        binding= FragmentHomeBinding.inflate(layoutInflater,container,false)
-
+        binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
+        dialogPlus = DialogPlus.newDialog(context).create()
         setUpRecyclerView()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            val postCollection=postDao.postCollection
-            val query=postCollection.orderBy("createdAt",com.google.firebase.firestore.Query.Direction.DESCENDING)
-            val recyclerViewOptions=FirestoreRecyclerOptions.Builder<Post>().setQuery(query,Post::class.java).build()
+            val postCollection = postDao.postCollection
+            val query = postCollection.orderBy(
+                "createdAt",
+                com.google.firebase.firestore.Query.Direction.DESCENDING
+            )
+            val recyclerViewOptions =
+                FirestoreRecyclerOptions.Builder<Post>().setQuery(query, Post::class.java).build()
             mAdapter.updateOptions(recyclerViewOptions)
 
-            binding.swipeRefreshLayout.isRefreshing=false
+            binding.swipeRefreshLayout.isRefreshing = false
         }
+
+        getImage =
+            registerForActivityResult(ActivityResultContracts.GetContent(), ActivityResultCallback {
+                if (it != null) {
+                    imageUri = it
+                    check = false
+                    dialogPlus.holderView.findViewById<ImageView>(R.id.editImage).setImageURI(it)
+                } else {
+                    dialogPlus.holderView.findViewById<ImageView>(R.id.editImage)
+                        .setImageDrawable(requireActivity().getDrawable(R.drawable.upload2))
+                }
+            })
+
+//        val callback = object : OnBackPressedCallback(true) {
+//            override fun handleOnBackPressed() {
+//                if (dialogPlus.isShowing) {
+//                    dialogPlus.dismiss()
+//                } else {
+//                    requireActivity().finish()
+//                }
+//            }
+//        }
+//        requireActivity().onBackPressedDispatcher.addCallback(callback)
         return binding.root
     }
 
     private fun setUpRecyclerView() {
-        postDao=PostDao()
-        val postCollection=postDao.postCollection
-        val query=postCollection.orderBy("createdAt",com.google.firebase.firestore.Query.Direction.DESCENDING)
-        val recyclerViewOptions=FirestoreRecyclerOptions.Builder<Post>().setQuery(query,Post::class.java).build()
-        recycleView=binding.trendingView
-        mAdapter = PostAdapter(recyclerViewOptions,this@Home,false)
-        recycleView.adapter=mAdapter
-        recycleView.layoutManager=LinearLayoutManagerWrapper(context,LinearLayoutManager.VERTICAL,false)
-    // recycleView.layoutManager=LinearLayoutManager(context)
+        postDao = PostDao()
+        val postCollection = postDao.postCollection
+        val query = postCollection.orderBy(
+            "createdAt",
+            com.google.firebase.firestore.Query.Direction.DESCENDING
+        )
+        val recyclerViewOptions =
+            FirestoreRecyclerOptions.Builder<Post>().setQuery(query, Post::class.java).build()
+        recycleView = binding.trendingView
+        mAdapter = PostAdapter(recyclerViewOptions, this@Home, false)
+        recycleView.adapter = mAdapter
+        recycleView.layoutManager =
+            LinearLayoutManagerWrapper(context, LinearLayoutManager.VERTICAL, false)
+        // recycleView.layoutManager=LinearLayoutManager(context)
 
     }
 
@@ -168,16 +213,138 @@ class Home : Fragment(), IPostAdapter {
     override fun onComment(post: Post) {
         val dialogPlus = DialogPlus.newDialog(binding.root.context)
             .setContentHolder(ViewHolder(R.layout.edit_post))
-            .setExpanded(true,binding.root.height)
+            .setExpanded(true, 1300)
             .setCancelable(true)
             .create()
-        dialogPlus.holderView.findViewById<TextView>(R.id.title_).text="Comments"
+        dialogPlus.holderView.findViewById<TextView>(R.id.title_).text = "Comments"
         dialogPlus.show()
+
+        dialogPlus.holderView.findViewById<ImageView>(R.id.cancelBtn).setOnClickListener {
+            dialogPlus.dismiss()
+        }
 
     }
 
     override fun onSave(post: Post) {
         postDao.updateSave(post)
+    }
+
+    override fun onMenu(view: View, postId: String, post: Post) {
+        val popupMenus = PopupMenu(view.context, view)
+        popupMenus.inflate(R.menu.post_menu)
+
+        popupMenus.setOnMenuItemClickListener {
+
+            val auth = Firebase.auth
+            val postDao = PostDao()
+
+            when (it.itemId) {
+                R.id.editBtn -> {
+                    if (auth.currentUser!!.uid == post.createdBy.uid) {
+                        dialogPlus = DialogPlus.newDialog(view.context)
+                            .setContentHolder(ViewHolder(R.layout.edit_post))
+                            .setExpanded(true, 1300)
+                            .setCancelable(true)
+                            .create()
+
+                        val view = dialogPlus.holderView
+                        val image = view.findViewById<ImageView>(R.id.editImage)
+                        val text = view.findViewById<EditText>(R.id.editTitle)
+                        val saveBtn = view.findViewById<Button>(R.id.saveBtn)
+                        val cancelBtn = view.findViewById<ImageView>(R.id.cancelBtn)
+                        val title = view.findViewById<TextView>(R.id.title_)
+
+                        title.text = "Edit Post"
+                        text.setText(post.text)
+                        Glide.with(view.context).load(post.imageUrl).into(image)
+
+                        dialogPlus.show()
+                        cancelBtn.setOnClickListener {
+                            dialogPlus.dismiss()
+                        }
+                        dialogPlus.holderView.findViewById<ImageView>(R.id.editImage)
+                            .setOnClickListener {
+                                requestPermission()
+                                getImage.launch("image/*")
+                            }
+
+                        saveBtn.setOnClickListener {
+                            if (!check) {
+                                var storageRef =
+                                    FirebaseStorage.getInstance().reference.child("images")
+                                storageRef = storageRef.child(System.currentTimeMillis().toString())
+                                storageRef.putFile(imageUri).addOnCompleteListener {
+                                    if (it.isSuccessful) {
+                                        storageRef.downloadUrl.addOnSuccessListener { uri ->
+                                            imageUrl = uri.toString()
+                                            postDao.updatePost(
+                                                text.text.toString(),
+                                                imageUrl,
+                                                postId
+                                            )
+                                        }
+                                        Toast.makeText(context, "Updated !!", Toast.LENGTH_SHORT)
+                                            .show()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            it.exception?.message,
+                                            Toast.LENGTH_SHORT
+                                        )
+                                            .show()
+                                    }
+                                }.addOnFailureListener {
+                                    Toast.makeText(context, "Failed !!", Toast.LENGTH_SHORT).show()
+                                }
+                            } else {
+                                postDao.updatePost(text.text.toString(), post.imageUrl, post.uid)
+                            }
+                            check = true
+                            dialogPlus.dismiss()
+                        }
+                    } else {
+                        Toast.makeText(
+                            view.context,
+                            "You can't modify others posts!!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    true
+                }
+                R.id.deleteBtn -> {
+                    if (auth.currentUser!!.uid == post.createdBy.uid) {
+                        val postDao = PostDao()
+                        postDao.deletePost(postId)
+                    } else {
+                        Toast.makeText(
+                            view.context,
+                            "You can't modify others posts!!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    true
+                }
+                else -> true
+            }
+        }
+        popupMenus.show()
+        // Menu buttons icon
+        val popup = PopupMenu::class.java.getDeclaredField("mPopup")
+        popup.isAccessible = true
+        val menu = popup.get(popupMenus)
+        menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java)
+            .invoke(menu, true)
+    }
+
+
+    private fun requestPermission() {
+        //GuidebyGoogleDevelopers
+        if (ContextCompat.checkSelfPermission(
+                binding.root.context, android.Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 100)
+        }
     }
 
 }

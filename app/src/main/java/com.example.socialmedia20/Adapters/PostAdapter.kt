@@ -15,10 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
 import com.example.socialmedia20.Adapters.PostAdapter.PostViewHolder
-import com.example.socialmedia20.Data.Post
-import com.example.socialmedia20.Data.PostDao
-import com.example.socialmedia20.Data.UserDao
-import com.example.socialmedia20.Data.Utils
+import com.example.socialmedia20.Data.*
 import com.example.socialmedia20.R
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -26,9 +23,16 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.orhanobut.dialogplus.DialogPlus
 import com.orhanobut.dialogplus.ViewHolder
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 
-class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener: IPostAdapter,private val check:Boolean) :
+class PostAdapter(
+    options: FirestoreRecyclerOptions<Post>,
+    private val listener: IPostAdapter,
+    private val check: Boolean
+) :
     FirestoreRecyclerAdapter<Post, PostAdapter.PostViewHolder>(
         options
     ) {
@@ -44,7 +48,7 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
         lateinit var menu: ImageView
         lateinit var shareBtn: ImageView
         lateinit var cmtBtn: ImageView
-        lateinit var saveBtn:ImageView
+        lateinit var saveBtn: ImageView
         lateinit var lottieAnimationView: LottieAnimationView
 
         init {
@@ -58,7 +62,7 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
             menu = itemView.findViewById(R.id.menus)
             shareBtn = itemView.findViewById(R.id.shareButton)
             cmtBtn = itemView.findViewById(R.id.cmtButton)
-            saveBtn= itemView.findViewById(R.id.saveButton)
+            saveBtn = itemView.findViewById(R.id.saveButton)
             lottieAnimationView = itemView.findViewById(R.id.lottieAnimationView)
         }
     }
@@ -70,24 +74,6 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int, model: Post) {
-
-        val currentUser=UserDao().auth.currentUser!!.uid
-        if(check && currentUser==model.createdBy.uid){
-            setUp(holder,position,model)
-        }else if(!check){
-            setUp(holder,position,model)
-        }
-        if(check&&currentUser!=model.createdBy.uid){
-//            holder.itemView.set
-        }
-    }
-
-    override fun onDataChanged() {
-        super.onDataChanged()
-        notifyDataSetChanged()
-    }
-
-    private fun setUp(holder: PostViewHolder, position: Int, model: Post){
         holder.postText.text = model.text
         holder.userText.text = model.createdBy.displayName
         Glide.with(holder.userImage.context).load(model.createdBy.imageUrl).circleCrop()
@@ -116,6 +102,29 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
             )
         }
 
+        holder.saveBtn.setOnClickListener {
+            listener.onSave(model)
+        }
+
+        val isSave = model.createdBy!!.save.contains(currentUserID)
+        if (isSave) {
+            holder.saveBtn.setImageDrawable(
+                ContextCompat.getDrawable(
+                    holder.saveBtn.context,
+                    R.drawable.ic_baseline_bookmark_24
+                )
+            )
+        } else {
+            holder.saveBtn.setImageDrawable(
+                ContextCompat.getDrawable(
+                    holder.saveBtn.context,
+                    R.drawable.ic_baseline_bookmark_border_24
+                )
+            )
+        }
+
+
+
         holder.cmtBtn.setOnClickListener {
             listener.onComment(model)
         }
@@ -128,15 +137,12 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
             listener.onLikeClicked(snapshots.getSnapshot(holder.adapterPosition).id)
         }
 
-        holder.saveBtn.setOnClickListener {
-            listener.onSave(model)
-        }
 
         holder.menu.setOnClickListener {
-            popupMenus(it, snapshots.getSnapshot(holder.adapterPosition).id, model)
+            listener.onMenu(it, model.uid, model)
         }
         holder.shareBtn.setOnClickListener {
-            listener.onSharePost(model,holder.image)
+            listener.onSharePost(model, holder.image)
         }
 
         holder.lottieAnimationView.addAnimatorListener(object : Animator.AnimatorListener {
@@ -156,81 +162,18 @@ class PostAdapter(options: FirestoreRecyclerOptions<Post>, private val listener:
         })
     }
 
-    private fun popupMenus(view: View, postId: String, post: Post) {
-        val popupMenus = PopupMenu(view.context, view)
-        popupMenus.inflate(R.menu.post_menu)
-
-        popupMenus.setOnMenuItemClickListener {
-
-            val auth = Firebase.auth
-            val postDao = PostDao()
-
-            when (it.itemId) {
-                R.id.editBtn -> {
-                    if (auth.currentUser!!.uid == post.createdBy.uid) {
-                        val dialogPlus = DialogPlus.newDialog(view.context)
-                            .setContentHolder(ViewHolder(R.layout.edit_post))
-                            .setExpanded(true, 1300)
-                            .setCancelable(false)
-                            .create()
-
-                        val view = dialogPlus.holderView
-                        val image = view.findViewById<ImageView>(R.id.editImage)
-                        val text = view.findViewById<EditText>(R.id.editTitle)
-                        val saveBtn = view.findViewById<Button>(R.id.saveBtn)
-                        val title = view.findViewById<TextView>(R.id.title_)
-
-                        title.text = "Edit Post"
-                        text.setText(post.text)
-                        Glide.with(view.context).load(post.imageUrl).into(image)
-
-                        dialogPlus.show()
-
-                        saveBtn.setOnClickListener {
-                            postDao.updatePost(text.text.toString(), post.imageUrl, postId)
-                            dialogPlus.dismiss()
-                        }
-                    } else {
-                        Toast.makeText(
-                            view.context,
-                            "You can't modify others posts!!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    true
-                }
-                R.id.deleteBtn -> {
-                    if (auth.currentUser!!.uid == post.createdBy.uid) {
-                        val postDao = PostDao()
-                        postDao.deletePost(postId)
-                        notifyDataSetChanged()
-                    } else {
-                        Toast.makeText(
-                            view.context,
-                            "You can't modify others posts!!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    true
-                }
-                else -> true
-            }
-        }
-        popupMenus.show()
-        // Menu buttons icon
-        val popup = PopupMenu::class.java.getDeclaredField("mPopup")
-        popup.isAccessible = true
-        val menu = popup.get(popupMenus)
-        menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java)
-            .invoke(menu, true)
+    override fun onDataChanged() {
+        super.onDataChanged()
+        notifyDataSetChanged()
     }
 }
 
 interface IPostAdapter {
     fun onLikeClicked(postId: String)
-    fun onSharePost(post: Post,imageView: ImageView)
+    fun onSharePost(post: Post, imageView: ImageView)
     fun onComment(post: Post)
-    fun onSave(post:Post)
+    fun onSave(post: Post)
+    fun onMenu(view: View,postId: String,post: Post)
 }
 
 

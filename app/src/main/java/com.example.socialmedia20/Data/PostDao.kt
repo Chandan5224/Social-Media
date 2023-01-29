@@ -25,9 +25,8 @@ class PostDao {
     private val db = FirebaseFirestore.getInstance()
     val postCollection = db.collection("posts")
     private val userCollection = db.collection("users")
-     val auth = Firebase.auth
+    val auth = Firebase.auth
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun addPost(text: String, imageUrl: String) {
         GlobalScope.launch(Dispatchers.IO) {
             // get current user
@@ -39,11 +38,11 @@ class PostDao {
             user.post.add(postId)
             val post = Post(postId, text, user, currentTime, imageUrl)
             postCollection.document(post.uid).set(post) /// set new post
-            userDao.addUser(user)
+            userDao.updateUser(user)
         }
     }
 
-    fun getRandomString(length: Int): String {
+    private fun getRandomString(length: Int): String {
         val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
         return (1..length)
             .map { allowedChars.random() }
@@ -79,6 +78,7 @@ class PostDao {
             }
             postCollection.document(postId).set(post) // for update post
         }
+
     }
 
     fun updateSave(post: Post) {
@@ -88,13 +88,22 @@ class PostDao {
             val userDao = UserDao()
             val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
             val isSave = user.save.contains(post.uid)
-            if(!isSave)
+            if (!isSave)
                 user.save.add(post.uid)
-            userDao.addUser(user)
+            else
+                user.save.remove(post.uid)
+            userDao.updateUser(user)
         }
     }
 
     fun deletePost(postId: String) {
-        postCollection.document(postId).delete()
+        GlobalScope.launch {
+            val currentUserId = auth.currentUser!!.uid
+            val userDao = UserDao()
+            val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
+            user.post.remove(postId)
+            userCollection.document(user.uid).set(user)
+            postCollection.document(postId).delete()
+        }
     }
 }

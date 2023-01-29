@@ -21,7 +21,7 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
-            android:name=".Splash"
+            android:name=".Activity.Splash"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,13 +39,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity
-            android:name=".Activity.splash_screen"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+
         <activity android:name=".Activity.MainActivity">
             <meta-data
                 android:name="android.app.lib_name"

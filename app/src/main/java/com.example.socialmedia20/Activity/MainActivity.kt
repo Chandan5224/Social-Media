@@ -11,7 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.WindowManager
+import android.view.View
 import android.widget.*
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -21,7 +21,6 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.socialmedia20.Adapters.VPAdapter
 import com.example.socialmedia20.Data.PostDao
-import com.example.socialmedia20.Fragments.Account
 import com.example.socialmedia20.Fragments.Home
 import com.example.socialmedia20.Fragments.Memes
 import com.example.socialmedia20.Fragments.News
@@ -60,10 +59,12 @@ class MainActivity : AppCompatActivity() {
 
         getImage =
             registerForActivityResult(ActivityResultContracts.GetContent(), ActivityResultCallback {
-                dialogPlus.holderView.findViewById<ImageView>(R.id.editImage).setImageURI(it)
                 if (it != null) {
                     imageUri = it
+                    dialogPlus.holderView.findViewById<ImageView>(R.id.editImage).setImageURI(it)
                     check = false
+                } else {
+                    dialogPlus.holderView.findViewById<ImageView>(R.id.editImage).setImageDrawable(getDrawable(R.drawable.upload2))
                 }
             })
 
@@ -82,14 +83,12 @@ class MainActivity : AppCompatActivity() {
             add(Home(), "")
             add(Memes(), "")
             add(News(), "")
-            add(Account(), "")
         }
 
         binding.viewPager.adapter = vpAdapter
-        binding.tabLayout.getTabAt(0)!!.setIcon(R.drawable.ic_baseline_home_24).tag="home"
-        binding.tabLayout.getTabAt(1)!!.setIcon(R.drawable.ic_baseline_tag_faces_24).tag="meme"
-        binding.tabLayout.getTabAt(2)!!.setIcon(R.drawable.ic_news).tag="news"
-        binding.tabLayout.getTabAt(3)!!.setIcon(R.drawable.ic_account_circle).tag="account"
+        binding.tabLayout.getTabAt(0)!!.setIcon(R.drawable.ic_baseline_home_24).tag = "home"
+        binding.tabLayout.getTabAt(1)!!.setIcon(R.drawable.ic_baseline_tag_faces_24).tag = "meme"
+        binding.tabLayout.getTabAt(2)!!.setIcon(R.drawable.ic_news).tag = "news"
         binding.tabLayout.tabGravity = TabLayout.GRAVITY_FILL
 
         binding.tabLayout.getTabAt(0)!!.icon!!.setColorFilter(
@@ -104,16 +103,13 @@ class MainActivity : AppCompatActivity() {
             resources.getColor(R.color.black),
             PorterDuff.Mode.SRC_IN
         )
-        binding.tabLayout.getTabAt(3)!!.icon!!.setColorFilter(
-            resources.getColor(R.color.black),
-            PorterDuff.Mode.SRC_IN
-        )
+
 
         binding.tabLayout.setOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val tabIconColor = ContextCompat.getColor(this@MainActivity, R.color.mainColor)
                 tab!!.icon!!.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN)
-                if(tab.tag=="home")
+                if (tab.tag == "home")
                     supportActionBar!!.show()
                 else
                     supportActionBar!!.hide()
@@ -179,16 +175,18 @@ class MainActivity : AppCompatActivity() {
         dialogPlus.show()
 
         val view = dialogPlus.holderView
-//        val image = view.findViewById<ImageView>(R.id.editImage)
+        val cancel = view.findViewById<ImageView>(R.id.cancelBtn)
         val postTitle = view.findViewById<EditText>(R.id.editTitle)
         val postBtn = view.findViewById<Button>(R.id.saveBtn)
         val title = view.findViewById<TextView>(R.id.title_)
-        val chooseImage = view.findViewById<Button>(R.id.uploadBtn)
 
         title.text = "Create POst"
         postBtn.text = "Post"
 
-        chooseImage.setOnClickListener {
+        cancel.setOnClickListener {
+            dialogPlus.dismiss()
+        }
+        dialogPlus.holderView.findViewById<ImageView>(R.id.editImage).setOnClickListener {
             requestPermission()
             getImage.launch("image/*")
         }
@@ -269,16 +267,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (dialogPlus.isShowing && dialogPlus.holderView.findViewById<EditText>(R.id.editTitle).text.isNotEmpty() ||
-            dialogPlus.isShowing && !check
-        )
-            allertShow("Do you want to discard changes ?", "Yes", "No", dialogPlus)
-        else if (dialogPlus.isShowing)
+        if (dialogPlus.isShowing)
             dialogPlus.dismiss()
-        else if (binding.viewPager.currentItem in 1..3)
+        else if (binding.viewPager.currentItem in 1..2)
             binding.viewPager.currentItem = 0
-        else {
-            this.cacheDir.deleteRecursively()
+        else if (binding.viewPager.currentItem == 0 && !dialogPlus.isShowing) {
+//            this.cacheDir.deleteRecursively() // for delete cache
             super.onBackPressed()
         }
     }

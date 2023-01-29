@@ -11,10 +11,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.Response
@@ -25,6 +27,7 @@ import com.example.socialmedia20.Data.MainData
 import com.example.socialmedia20.Data.MySingleton
 import com.example.socialmedia20.NewsAdapter
 import com.example.socialmedia20.NewsItemClicked
+import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.FragmentNewsBinding
 
 
@@ -46,7 +49,7 @@ class News : Fragment(), NewsItemClicked {
     lateinit var mActivity: MainActivity
 
     lateinit var binding: FragmentNewsBinding
-    private lateinit var recycleView : RecyclerView
+    private lateinit var recycleView: RecyclerView
     private lateinit var mAdapter: NewsAdapter
 
 
@@ -64,46 +67,22 @@ class News : Fragment(), NewsItemClicked {
     ): View? {
 
         // Inflate the layout for this fragment
-        binding= FragmentNewsBinding.inflate(layoutInflater)
-        recycleView=binding.newsView
-        recycleView.layoutManager=LinearLayoutManager(context)
+        binding = FragmentNewsBinding.inflate(layoutInflater)
+        recycleView = binding.newsView
+        recycleView.layoutManager = LinearLayoutManager(context)
         fetchData()
         mAdapter = NewsAdapter(this)
-        recycleView.adapter=mAdapter
-        mActivity=(activity as MainActivity)
+        recycleView.adapter = mAdapter
+        mActivity = (activity as MainActivity)
 
-
-        // Scroll Check Handle
-//        val array = arrayOf(1)
-
-//        val onScrollListener: RecyclerView.OnScrollListener =
-//            object : RecyclerView.OnScrollListener() {
-//                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-//                    // code
-//                    array[0]=newState
-//                }
-//                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                    // code
-//                    if(dy>0 && (array[0]==0 || array[0]==2))
-//                    {
-//                        hideToolbar();
-//                    }else if(dy<-10){
-//                        showToolbar();
-//                    }
-//                }
+//        val callback = object : OnBackPressedCallback(true) {
+//            override fun handleOnBackPressed() {
+//                requireActivity().findViewById<ViewPager>(R.id.viewPager).currentItem = 0
 //            }
-//        recycleView.addOnScrollListener(onScrollListener)
-
+//        }
+//        requireActivity().onBackPressedDispatcher.addCallback(callback)
         return binding.root
     }
-
-//    private fun showToolbar() {
-//        mActivity.binding.toolbarLayout.visibility=View.VISIBLE
-//    }
-//
-//    private fun hideToolbar() {
-//        mActivity.binding.toolbarLayout.visibility=View.GONE
-//    }
 
     companion object {
         /**
@@ -125,23 +104,24 @@ class News : Fragment(), NewsItemClicked {
             }
     }
 
-    private fun fetchData(){
+    private fun fetchData() {
         val queue = Volley.newRequestQueue(context)
-        val url = "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=a350e62265ce4d768cebdb7e7abc5e8e"
+        val url =
+            "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=a350e62265ce4d768cebdb7e7abc5e8e"
 
-        val jsonObjectRequest = object :JsonObjectRequest(
+        val jsonObjectRequest = object : JsonObjectRequest(
             Request.Method.GET,
             url,
             null,
             Response.Listener {
 
                 binding.shimmerNews.stopShimmer()
-                binding.shimmerNews.visibility=View.GONE
-                binding.newsView.visibility=View.VISIBLE
+                binding.shimmerNews.visibility = View.GONE
+                binding.newsView.visibility = View.VISIBLE
 
                 val newsJsonArray = it.getJSONArray("articles")
                 val newsArray = ArrayList<MainData>()
-                for(i in 0 until newsJsonArray.length()) {
+                for (i in 0 until newsJsonArray.length()) {
                     val newsJsonObject = newsJsonArray.getJSONObject(i)
                     val news = MainData(
                         newsJsonObject.getString("title"),
@@ -156,8 +136,7 @@ class News : Fragment(), NewsItemClicked {
             },
             Response.ErrorListener {
             }
-        )
-        {
+        ) {
             @Throws(AuthFailureError::class)
             override fun getHeaders(): Map<String, String> {
                 val params: MutableMap<String, String> = HashMap()
@@ -170,8 +149,7 @@ class News : Fragment(), NewsItemClicked {
     }
 
 
-    override fun onItemClicked(item : MainData)
-    {
+    override fun onItemClicked(item: MainData) {
         // custom browse
         val builder = CustomTabsIntent.Builder()
         val customTabsIntent = builder.build()
@@ -179,22 +157,21 @@ class News : Fragment(), NewsItemClicked {
     }
 
     override fun onShareClick(item: MainData, imageView: ImageView) {
-        val intent= Intent(Intent.ACTION_SEND)
+        val intent = Intent(Intent.ACTION_SEND)
 
         // for checking the urlToImage is it coming or not?
-        if(imageView.height>10)
-        {
-            val mBitmap= imageView.drawable as BitmapDrawable
-            val bitmap=mBitmap.bitmap
+        if (imageView.height > 10) {
+            val mBitmap = imageView.drawable as BitmapDrawable
+            val bitmap = mBitmap.bitmap
             val contentResolver = requireActivity().contentResolver
-            val pat= MediaStore.Images.Media.insertImage(contentResolver,bitmap,item.title,null)
+            val pat = MediaStore.Images.Media.insertImage(contentResolver, bitmap, item.title, null)
             intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(pat))
-            intent.type="image/*"
+            intent.type = "image/*"
         }
-        intent.type="text/*"
-        intent.putExtra(Intent.EXTRA_TEXT,item.title+"\nCheck out here :- "+item.url)
-        val chooser= Intent.createChooser(intent,item.title)
-        startActivity(chooser,null)
+        intent.type = "text/*"
+        intent.putExtra(Intent.EXTRA_TEXT, item.title + "\nCheck out here :- " + item.url)
+        val chooser = Intent.createChooser(intent, item.title)
+        startActivity(chooser, null)
     }
 }
 

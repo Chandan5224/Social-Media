@@ -1,4 +1,4 @@
-package com.example.socialmedia20
+package com.example.socialmedia20.Activity
 
 
 import android.content.Intent
@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import com.example.socialmedia20.Activity.MainActivity
 import com.example.socialmedia20.databinding.ActivitySplashBinding
 class Splash : AppCompatActivity() {
 
