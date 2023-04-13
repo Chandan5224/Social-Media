@@ -37,7 +37,9 @@ class PostDao {
             val postId = getRandomString(15)
             user.post.add(postId)
             val post = Post(postId, text, user, currentTime, imageUrl)
-            postCollection.document(post.uid).set(post) /// set new post
+            postCollection.document(post.uid).set(post).addOnSuccessListener {
+
+            } /// set new post
             userDao.updateUser(user)
         }
     }

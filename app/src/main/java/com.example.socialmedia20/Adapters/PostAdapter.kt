@@ -63,7 +63,7 @@ class PostAdapter(
             shareBtn = itemView.findViewById(R.id.shareButton)
             cmtBtn = itemView.findViewById(R.id.cmtButton)
             saveBtn = itemView.findViewById(R.id.saveButton)
-            lottieAnimationView = itemView.findViewById(R.id.lottieAnimationView)
+            lottieAnimationView = itemView.findViewById(R.id.lottieAnimaationView)
         }
     }
 

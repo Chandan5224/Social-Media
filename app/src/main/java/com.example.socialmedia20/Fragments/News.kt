@@ -105,7 +105,6 @@ class News : Fragment(), NewsItemClicked {
     }
 
     private fun fetchData() {
-        val queue = Volley.newRequestQueue(context)
         val url =
             "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=a350e62265ce4d768cebdb7e7abc5e8e"
 
@@ -125,7 +124,7 @@ class News : Fragment(), NewsItemClicked {
                     val newsJsonObject = newsJsonArray.getJSONObject(i)
                     val news = MainData(
                         newsJsonObject.getString("title"),
-                        newsJsonObject.getString("author"),
+                        newsJsonObject.getJSONObject("source").getString("name"),
                         newsJsonObject.getString("url"),
                         newsJsonObject.getString("urlToImage"),
                         newsJsonObject.getString("publishedAt")

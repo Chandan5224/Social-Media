@@ -192,12 +192,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         postBtn.setOnClickListener {
+            binding.uploadLoader.visibility=View.VISIBLE
+            binding.uploadLoader.startShimmer()
             val inputTitle = postTitle.text.toString().trim()
             if (inputTitle.isNotEmpty() && !check) {
                 var storageRef = FirebaseStorage.getInstance().reference.child("images")
                 storageRef = storageRef.child(System.currentTimeMillis().toString())
                 storageRef.putFile(imageUri).addOnCompleteListener {
                     if (it.isSuccessful) {
+                        binding.uploadLoader.stopShimmer()
+                        binding.uploadLoader.visibility=View.GONE
                         storageRef.downloadUrl.addOnSuccessListener { uri ->
                             imageUrl = uri.toString()
                             postDao.addPost(inputTitle, imageUrl)
