@@ -5,30 +5,32 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.example.socialmedia20.Activity.MainActivity
-import com.example.socialmedia20.Data.MainData
+import com.example.socialmedia20.Data.News
 import com.example.socialmedia20.Data.MySingleton
 import com.example.socialmedia20.NewsAdapter
 import com.example.socialmedia20.NewsItemClicked
-import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.FragmentNewsBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope.coroutineContext
+import kotlinx.coroutines.launch
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -61,6 +63,7 @@ class News : Fragment(), NewsItemClicked {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -71,37 +74,17 @@ class News : Fragment(), NewsItemClicked {
         recycleView = binding.newsView
         recycleView.layoutManager = LinearLayoutManager(context)
         fetchData()
-        mAdapter = NewsAdapter(this)
+        mAdapter = NewsAdapter(this, requireActivity())
         recycleView.adapter = mAdapter
+
         mActivity = (activity as MainActivity)
 
-//        val callback = object : OnBackPressedCallback(true) {
-//            override fun handleOnBackPressed() {
-//                requireActivity().findViewById<ViewPager>(R.id.viewPager).currentItem = 0
-//            }
-//        }
-//        requireActivity().onBackPressedDispatcher.addCallback(callback)
-        return binding.root
-    }
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            recycleView.adapter?.notifyDataSetChanged()
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment News.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            News().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        return binding.root
     }
 
     private fun fetchData() {
@@ -119,10 +102,11 @@ class News : Fragment(), NewsItemClicked {
                 binding.newsView.visibility = View.VISIBLE
 
                 val newsJsonArray = it.getJSONArray("articles")
-                val newsArray = ArrayList<MainData>()
+                val newsArray = ArrayList<News>()
                 for (i in 0 until newsJsonArray.length()) {
                     val newsJsonObject = newsJsonArray.getJSONObject(i)
-                    val news = MainData(
+                    val id= getRandomString(10)
+                    val news = News(
                         newsJsonObject.getString("title"),
                         newsJsonObject.getJSONObject("source").getString("name"),
                         newsJsonObject.getString("url"),
@@ -147,15 +131,25 @@ class News : Fragment(), NewsItemClicked {
         MySingleton.getInstance(binding.root.context).addToRequestQueue(jsonObjectRequest)
     }
 
+    private fun getRandomString(length: Int): String {
+        val allowedChars = ('0'..'9')
+        return (1..length)
+            .map { allowedChars.random() }
+            .joinToString("")
+    }
 
-    override fun onItemClicked(item: MainData) {
+
+    override fun onItemClicked(item: News) {
         // custom browse
         val builder = CustomTabsIntent.Builder()
         val customTabsIntent = builder.build()
+
         customTabsIntent.launchUrl(binding.root.context, Uri.parse(item.url))
+
+
     }
 
-    override fun onShareClick(item: MainData, imageView: ImageView) {
+    override fun onShareClick(item: News, imageView: ImageView) {
         val intent = Intent(Intent.ACTION_SEND)
 
         // for checking the urlToImage is it coming or not?
@@ -172,6 +166,8 @@ class News : Fragment(), NewsItemClicked {
         val chooser = Intent.createChooser(intent, item.title)
         startActivity(chooser, null)
     }
+
+
 }
 
 

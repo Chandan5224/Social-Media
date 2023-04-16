@@ -1,58 +1,121 @@
 package com.example.socialmedia20
 
+import android.content.Context
+import android.os.AsyncTask
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.socialmedia20.Data.MainData
+import com.example.socialmedia20.Data.News
+import com.example.socialmedia20.RoomDatabase.DbAsyncTask
+import com.example.socialmedia20.RoomDatabase.NewsDatabase
 
-class NewsAdapter(private val listener: NewsItemClicked) :RecyclerView.Adapter<NewsAdapter.NewsViewHolder>(){
 
-    private val items: ArrayList<MainData> = ArrayList()
+class NewsAdapter(private val listener: NewsItemClicked, val context: Context) :
+    RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
-    class NewsViewHolder(itemView: View):RecyclerView.ViewHolder(itemView)
+    private val items: ArrayList<News> = ArrayList()
+    lateinit var mNews:News
+
+    class NewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
-        val view=LayoutInflater.from(parent.context).inflate(R.layout.news, parent, false)
-        val viewHolder=NewsViewHolder(view)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.news, parent, false)
+        val viewHolder = NewsViewHolder(view)
 
         /// For Clicked Items
+
+        viewHolder.itemView.findViewById<ImageView>(R.id.saveBtn).setOnClickListener {
+            if(!DbAsyncTask(context,items[viewHolder.adapterPosition],1).execute().get()){
+                val async = DbAsyncTask(context,items[viewHolder.adapterPosition],2).execute()
+                if(async.get()){
+                    viewHolder.itemView.findViewById<ImageView>(R.id.saveBtn).setImageDrawable(
+                        ContextCompat.getDrawable(
+                            viewHolder.itemView.context,
+                            R.drawable.ic_baseline_bookmark_24
+                        )
+                    )
+                }else{
+                    Toast.makeText(context,"Some error occurred!",Toast.LENGTH_SHORT).show()
+                }
+            }else{
+                val async = DbAsyncTask(context,items[viewHolder.adapterPosition],3).execute()
+                if(async.get()){
+                    viewHolder.itemView.findViewById<ImageView>(R.id.saveBtn).setImageDrawable(
+                        ContextCompat.getDrawable(
+                            viewHolder.itemView.context,
+                            R.drawable.ic_baseline_bookmark_border_24
+                        )
+                    )
+                }else{
+                    Toast.makeText(context,"Some error occurred!",Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+
+
         view.setOnClickListener {
             listener.onItemClicked(items[viewHolder.adapterPosition])
         }
 
         view.findViewById<ImageView>(R.id.shareB).setOnClickListener {
-            listener.onShareClick(items[viewHolder.adapterPosition],view.findViewById<ImageView>(R.id.imageItem))
+            listener.onShareClick(
+                items[viewHolder.adapterPosition],
+                view.findViewById<ImageView>(R.id.imageItem)
+            )
         }
         return viewHolder
     }
 
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
-        val currentItem=items[position]
-        holder.itemView.findViewById<TextView>(R.id.itemTitle).text=currentItem.title
-        holder.itemView.findViewById<TextView>(R.id.authorTitle).text=currentItem.author
-        holder.itemView.findViewById<TextView>(R.id.time).text=currentItem.time
-        Glide.with(holder.itemView.context).load(currentItem.imageUrl).error(R.drawable.error_news).into(holder.itemView.findViewById<ImageView>(R.id.imageItem))
+        val currentItem = items[position]
+        holder.itemView.findViewById<TextView>(R.id.newsTitle).text = currentItem.title
+        holder.itemView.findViewById<TextView>(R.id.authorTitle).text = currentItem.author
+        holder.itemView.findViewById<TextView>(R.id.time).text = currentItem.time
+        Glide.with(holder.itemView.context).load(currentItem.imageUrl).error(R.drawable.error_news)
+            .into(holder.itemView.findViewById<ImageView>(R.id.imageItem))
+
+        //// is save checking
+        val isSave= DbAsyncTask(context,currentItem,1).execute()
+        if(isSave.get()){
+            holder.itemView.findViewById<ImageView>(R.id.saveBtn).setImageDrawable(
+                ContextCompat.getDrawable(
+                    holder.itemView.context,
+                    R.drawable.ic_baseline_bookmark_24
+                )
+            )
+        }else{
+            holder.itemView.findViewById<ImageView>(R.id.saveBtn).setImageDrawable(
+                ContextCompat.getDrawable(
+                    holder.itemView.context,
+                    R.drawable.ic_baseline_bookmark_border_24
+                )
+            )
+        }
+
     }
 
     override fun getItemCount(): Int {
         return items.size
     }
 
-    fun updateNews(updatedNews: ArrayList<MainData>)
-    {
+    fun updateNews(updatedNews: ArrayList<News>) {
         items.clear()
         items.addAll(updatedNews)
 
         ///it's call again whole Adapter work
         notifyDataSetChanged()
     }
+
 }
 
-interface NewsItemClicked{
-    fun onItemClicked(item : MainData)
-    fun onShareClick(item: MainData, imageView: ImageView)
+interface NewsItemClicked {
+    fun onItemClicked(item: News)
+    fun onShareClick(item: News, imageView: ImageView)
 }

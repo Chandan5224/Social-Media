@@ -24,6 +24,7 @@ import com.example.socialmedia20.Data.PostDao
 import com.example.socialmedia20.Fragments.Home
 import com.example.socialmedia20.Fragments.Memes
 import com.example.socialmedia20.Fragments.News
+import com.example.socialmedia20.Fragments.SaveFrag
 import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.ActivityMainBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -83,12 +84,14 @@ class MainActivity : AppCompatActivity() {
             add(Home(), "")
             add(Memes(), "")
             add(News(), "")
+            add(SaveFrag(),"")
         }
 
         binding.viewPager.adapter = vpAdapter
         binding.tabLayout.getTabAt(0)!!.setIcon(R.drawable.ic_baseline_home_24).tag = "home"
         binding.tabLayout.getTabAt(1)!!.setIcon(R.drawable.ic_baseline_tag_faces_24).tag = "meme"
         binding.tabLayout.getTabAt(2)!!.setIcon(R.drawable.ic_news).tag = "news"
+        binding.tabLayout.getTabAt(3)!!.setIcon(R.drawable.ic_baseline_bookmark_24).tag="save"
         binding.tabLayout.tabGravity = TabLayout.GRAVITY_FILL
 
         binding.tabLayout.getTabAt(0)!!.icon!!.setColorFilter(
@@ -100,6 +103,11 @@ class MainActivity : AppCompatActivity() {
             PorterDuff.Mode.SRC_IN
         )
         binding.tabLayout.getTabAt(2)!!.icon!!.setColorFilter(
+            resources.getColor(R.color.black),
+            PorterDuff.Mode.SRC_IN
+        )
+
+        binding.tabLayout.getTabAt(3)!!.icon!!.setColorFilter(
             resources.getColor(R.color.black),
             PorterDuff.Mode.SRC_IN
         )
@@ -273,7 +281,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (dialogPlus.isShowing)
             dialogPlus.dismiss()
-        else if (binding.viewPager.currentItem in 1..2)
+        else if (binding.viewPager.currentItem in 1..3)
             binding.viewPager.currentItem = 0
         else if (binding.viewPager.currentItem == 0 && !dialogPlus.isShowing) {
 //            this.cacheDir.deleteRecursively() // for delete cache

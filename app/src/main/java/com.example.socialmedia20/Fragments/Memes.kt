@@ -11,11 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.viewpager.widget.ViewPager
 import com.airbnb.lottie.LottieAnimationView
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
@@ -71,7 +68,7 @@ class Memes : Fragment() {
                 val contentResolver = requireActivity().contentResolver
                 val pat = MediaStore.Images.Media.insertImage(contentResolver, bitmap, null, null)
                 val intent = Intent(Intent.ACTION_SEND)
-                intent.type = "image/*"
+                intent.type = "image/gif"
                 intent.type = "text/*"
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(pat))
