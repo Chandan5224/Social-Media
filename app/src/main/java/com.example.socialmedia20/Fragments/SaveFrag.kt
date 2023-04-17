@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.socialmedia20.Adapters.SaveItemClicked
 import com.example.socialmedia20.Adapters.SaveRecyclerAdapter
 import com.example.socialmedia20.Data.News
@@ -53,6 +54,23 @@ class SaveFrag : Fragment(), SaveItemClicked {
             binding.swipeRefreshLayout.isRefreshing = false
         }
 
+        val state = intArrayOf(1)
+        binding.saveRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                state[0] = newState
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && (state[0] == 0 || state[0] == 2)) {
+                    binding.linearLayout.visibility = View.GONE
+                } else if (dy < -10) {
+
+                    binding.linearLayout.visibility = View.VISIBLE
+                }
+            }
+        })
         setupRecyclerView()
 
 
@@ -64,8 +82,8 @@ class SaveFrag : Fragment(), SaveItemClicked {
         if (activity != null) {
             binding.shimmerSave.stopShimmer()
             binding.shimmerSave.visibility = View.GONE
-            binding.saveRecyclerView.visibility=View.VISIBLE
-            mAdapter = SaveRecyclerAdapter(activity as Context, dbNewsList,this)
+            binding.saveRecyclerView.visibility = View.VISIBLE
+            mAdapter = SaveRecyclerAdapter(activity as Context, dbNewsList, this)
             binding.saveRecyclerView.adapter = mAdapter
             binding.saveRecyclerView.layoutManager = LinearLayoutManager(activity as Context)
 
@@ -109,12 +127,10 @@ class SaveFrag : Fragment(), SaveItemClicked {
     }
 
     override fun onDeleteClick(item: News) {
-        if(DbAsyncTask(activity as Context,item,3).execute().get())
-        {
+        if (DbAsyncTask(activity as Context, item, 3).execute().get()) {
             setupRecyclerView()
             binding.saveRecyclerView.adapter?.notifyDataSetChanged()
-        }
-        else
-            Toast.makeText(context,"Some error occurred!!", Toast.LENGTH_SHORT).show()
+        } else
+            Toast.makeText(context, "Some error occurred!!", Toast.LENGTH_SHORT).show()
     }
 }
