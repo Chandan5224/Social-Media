@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:id="@+id/newsBtn"
+            android:id="@+id/postBtn"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="10dp"
@@ -27,7 +27,7 @@
             android:text="Posts" />
 
         <Button
-            android:id="@+id/postBtn"
+            android:id="@+id/newsBtn"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="10dp"
@@ -60,7 +60,7 @@
     </com.facebook.shimmer.ShimmerFrameLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
+        android:id="@+id/swipeNewsRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -69,11 +69,28 @@
         app:layout_constraintTop_toBottomOf="@id/linearLayout">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/saveRecyclerView"
+            android:id="@+id/saveNewsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             android:visibility="gone" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipePostsRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/savePostsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

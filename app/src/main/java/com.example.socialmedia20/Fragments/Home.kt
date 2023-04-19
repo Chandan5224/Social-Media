@@ -115,6 +115,27 @@ class Home : Fragment(), IPostAdapter {
 //            }
 //        }
 //        requireActivity().onBackPressedDispatcher.addCallback(callback)
+        val state = intArrayOf(1)
+        binding.trendingView.addOnScrollListener(object : RecyclerView.OnScrollListener()
+        {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                state[0]=newState
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && (state[0] == 0 || state[0] == 2)) {
+                    requireActivity().findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).visibility = View.GONE
+                } else if (dy < -10) {
+
+                    requireActivity().findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).visibility = View.VISIBLE
+                }
+            }
+        })
+
+
+
         return binding.root
     }
 
@@ -128,7 +149,7 @@ class Home : Fragment(), IPostAdapter {
         val recyclerViewOptions =
             FirestoreRecyclerOptions.Builder<Post>().setQuery(query, Post::class.java).build()
         recycleView = binding.trendingView
-        mAdapter = PostAdapter(recyclerViewOptions, this@Home, false)
+        mAdapter = PostAdapter(recyclerViewOptions, this@Home, activity as Context)
         recycleView.adapter = mAdapter
         recycleView.layoutManager =
             LinearLayoutManagerWrapper(context, LinearLayoutManager.VERTICAL, false)

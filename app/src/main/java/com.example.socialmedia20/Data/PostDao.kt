@@ -1,32 +1,46 @@
 package com.example.socialmedia20.Data
 
-import android.content.ContentValues.TAG
-import android.net.Uri
-import android.util.Log
-import android.widget.Toast
-import androidx.core.net.toUri
+
+import androidx.room.*
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.*
-import kotlin.math.log
-
+@Dao
 class PostDao {
     private val db = FirebaseFirestore.getInstance()
     val postCollection = db.collection("posts")
     private val userCollection = db.collection("users")
     val auth = Firebase.auth
 
+    /// Room Database
+    @Dao
+    interface PostDaoRoomDB {
+
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        fun addPost(post: Post)
+
+        @Delete
+        fun deletePost(post: Post)
+
+        @Query("SELECT * FROM posts")
+        fun getAll(): List<Post>
+
+        @Query("DELETE FROM posts")
+        fun deleteAll()
+
+        @Query("SELECT * FROM posts WHERE uid=:postId")
+        fun getById(postId : String): Post
+    }
+
+
+    /// Firebase Database
     fun addPost(text: String, imageUrl: String) {
         GlobalScope.launch(Dispatchers.IO) {
             // get current user

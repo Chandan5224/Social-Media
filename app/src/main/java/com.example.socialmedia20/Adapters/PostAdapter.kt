@@ -1,37 +1,31 @@
 package com.example.socialmedia20.Adapters
 
 import android.animation.Animator
+import android.content.Context
+import android.os.AsyncTask
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
-import com.example.socialmedia20.Adapters.PostAdapter.PostViewHolder
 import com.example.socialmedia20.Data.*
 import com.example.socialmedia20.R
+import com.example.socialmedia20.RoomDatabase.PostDatabase
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.orhanobut.dialogplus.DialogPlus
-import com.orhanobut.dialogplus.ViewHolder
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 
 class PostAdapter(
     options: FirestoreRecyclerOptions<Post>,
     private val listener: IPostAdapter,
-    private val check: Boolean
+    private val context: Context
 ) :
     FirestoreRecyclerAdapter<Post, PostAdapter.PostViewHolder>(
         options
@@ -106,18 +100,53 @@ class PostAdapter(
             listener.onSave(model)
         }
 
-        val isSave = model.createdBy!!.save.contains(currentUserID)
-        if (isSave) {
+        /// For Clicked Items
+
+        holder.saveBtn.setOnClickListener {
+            if (!PostDbAsyncTask(context, model, 1).execute()
+                    .get()
+            ) {
+                val async =
+                    PostDbAsyncTask(context, model, 2).execute()
+                if (async.get()) {
+                    holder.saveBtn.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            context,
+                            R.drawable.ic_baseline_bookmark_24
+                        )
+                    )
+                } else {
+                    Toast.makeText(context, "Some error occurred!", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                val async =
+                    PostDbAsyncTask(context, model, 3).execute()
+                if (async.get()) {
+                    holder.saveBtn.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            context,
+                            R.drawable.ic_baseline_bookmark_border_24
+                        )
+                    )
+                } else {
+                    Toast.makeText(context, "Some error occurred!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        //// is save checking
+        val isSave = PostDbAsyncTask(context, model, 1).execute()
+        if (isSave.get()) {
             holder.saveBtn.setImageDrawable(
                 ContextCompat.getDrawable(
-                    holder.saveBtn.context,
+                    holder.itemView.context,
                     R.drawable.ic_baseline_bookmark_24
                 )
             )
         } else {
             holder.saveBtn.setImageDrawable(
                 ContextCompat.getDrawable(
-                    holder.saveBtn.context,
+                    holder.itemView.context,
                     R.drawable.ic_baseline_bookmark_border_24
                 )
             )
@@ -169,6 +198,33 @@ class PostAdapter(
         super.onDataChanged()
         notifyDataSetChanged()
     }
+
+    class PostDbAsyncTask(val context: Context, val post: Post, val mode: Int) :
+        AsyncTask<Void, Void, Boolean>() {
+        val db = PostDatabase.getDatabase(context)
+        override fun doInBackground(vararg params: Void?): Boolean {
+            when (mode) {
+                1 -> {
+                    //check is save or not
+                    val post: Post? = db.postDao().getById(post.uid)
+                    return post != null
+                }
+                2 -> {
+                    // insert data
+                    db.postDao().addPost(post)
+                    return true
+                }
+                3 -> {
+                    //  delete
+                    db.postDao().deletePost(post)
+                    return true
+                }
+            }
+            return false
+        }
+
+    }
+
 }
 
 interface IPostAdapter {
@@ -176,7 +232,7 @@ interface IPostAdapter {
     fun onSharePost(post: Post, imageView: ImageView)
     fun onComment(post: Post)
     fun onSave(post: Post)
-    fun onMenu(view: View,postId: String,post: Post)
+    fun onMenu(view: View, postId: String, post: Post)
 }
 
 

@@ -8,10 +8,17 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.SearchView.OnCloseListener
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -26,6 +33,7 @@ import com.example.socialmedia20.Data.News
 import com.example.socialmedia20.Data.MySingleton
 import com.example.socialmedia20.NewsAdapter
 import com.example.socialmedia20.NewsItemClicked
+import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.FragmentNewsBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -49,6 +57,8 @@ class News : Fragment(), NewsItemClicked {
     private var param1: String? = null
     private var param2: String? = null
     lateinit var mActivity: MainActivity
+    var filterNews = ArrayList<News>()
+    var newsList = ArrayList<News>()
 
     lateinit var binding: FragmentNewsBinding
     private lateinit var recycleView: RecyclerView
@@ -63,7 +73,6 @@ class News : Fragment(), NewsItemClicked {
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -73,11 +82,107 @@ class News : Fragment(), NewsItemClicked {
         binding = FragmentNewsBinding.inflate(layoutInflater)
         recycleView = binding.newsView
         recycleView.layoutManager = LinearLayoutManager(context)
-        fetchData()
+        fetchData("technology")
         mAdapter = NewsAdapter(this, requireActivity())
         recycleView.adapter = mAdapter
 
         mActivity = (activity as MainActivity)
+
+        // Click Handle
+
+        binding.searchImageview.setOnClickListener {
+            binding.searchNews.visibility = View.VISIBLE
+            binding.searchImageview.visibility = View.GONE
+            binding.catTextview.visibility = View.GONE
+        }
+        binding.searchNews.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
+            android.widget.SearchView.OnQueryTextListener {
+
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(msg: String): Boolean {
+                filterNews.clear()
+                filter(msg)
+                return false
+            }
+        })
+
+        binding.searchNews.setOnCloseListener( object : View.OnClickListener,
+            SearchView.OnCloseListener {
+            override fun onClick(v: View?) {
+                binding.searchNews.visibility = View.GONE
+                binding.searchImageview.visibility = View.VISIBLE
+                binding.catTextview.visibility = View.VISIBLE
+            }
+
+            override fun onClose(): Boolean {
+                binding.searchNews.visibility = View.GONE
+                binding.searchImageview.visibility = View.VISIBLE
+                binding.catTextview.visibility = View.VISIBLE
+                return true
+            }
+
+        })
+
+        val state = intArrayOf(1)
+
+        binding.newsView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                state[0] = newState
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && (state[0] == 0 || state[0] == 2)) {
+                    binding.category.visibility = View.GONE
+                    binding.horizontalScroll.visibility = View.GONE
+                } else if (dy < -15) {
+                    binding.category.visibility = View.VISIBLE
+                    binding.horizontalScroll.visibility = View.VISIBLE
+                }
+            }
+        })
+
+
+        binding.btn1.setOnClickListener {
+            binding.newsView.visibility = View.GONE
+            binding.shimmerNews.visibility = View.VISIBLE
+            binding.shimmerNews.startShimmer()
+            fetchData("technology")
+        }
+        binding.btn2.setOnClickListener {
+            binding.newsView.visibility = View.GONE
+            binding.shimmerNews.visibility = View.VISIBLE
+            binding.shimmerNews.startShimmer()
+            fetchData("sports")
+        }
+        binding.btn3.setOnClickListener {
+            binding.newsView.visibility = View.GONE
+            binding.shimmerNews.visibility = View.VISIBLE
+            binding.shimmerNews.startShimmer()
+            fetchData("politics")
+        }
+        binding.btn4.setOnClickListener {
+            binding.newsView.visibility = View.GONE
+            binding.shimmerNews.visibility = View.VISIBLE
+            binding.shimmerNews.startShimmer()
+            fetchData("business")
+        }
+        binding.btn5.setOnClickListener {
+            binding.newsView.visibility = View.GONE
+            binding.shimmerNews.visibility = View.VISIBLE
+            binding.shimmerNews.startShimmer()
+            fetchData("health")
+        }
+        binding.btn6.setOnClickListener {
+            binding.newsView.visibility = View.GONE
+            binding.shimmerNews.visibility = View.VISIBLE
+            binding.shimmerNews.startShimmer()
+            fetchData("entertainment")
+        }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             recycleView.adapter?.notifyDataSetChanged()
@@ -87,9 +192,26 @@ class News : Fragment(), NewsItemClicked {
         return binding.root
     }
 
-    private fun fetchData() {
+    fun filter(text: String) {
+        if (text.isEmpty()) {
+            mAdapter.items = newsList
+            binding.newsView.adapter = mAdapter
+            mAdapter.notifyDataSetChanged()
+        } else {
+            for (news in newsList) {
+                if (news.title.lowercase().contains(text.lowercase())||news.author.lowercase().contains(text.lowercase())) {
+                    filterNews.add(news)
+                }
+            }
+            mAdapter.items = filterNews
+            binding.newsView.adapter = mAdapter
+            mAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun fetchData(cat: String) {
         val url =
-            "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=a350e62265ce4d768cebdb7e7abc5e8e"
+            "https://newsapi.org/v2/top-headlines?country=in&category=$cat&apiKey=a350e62265ce4d768cebdb7e7abc5e8e"
 
         val jsonObjectRequest = object : JsonObjectRequest(
             Request.Method.GET,
@@ -105,7 +227,7 @@ class News : Fragment(), NewsItemClicked {
                 val newsArray = ArrayList<News>()
                 for (i in 0 until newsJsonArray.length()) {
                     val newsJsonObject = newsJsonArray.getJSONObject(i)
-                    val id= getRandomString(10)
+                    val id = getRandomString(10)
                     val news = News(
                         newsJsonObject.getString("title"),
                         newsJsonObject.getJSONObject("source").getString("name"),
@@ -115,6 +237,7 @@ class News : Fragment(), NewsItemClicked {
                     )
                     newsArray.add(news)
                 }
+                newsList = newsArray
                 mAdapter.updateNews(newsArray)
             },
             Response.ErrorListener {

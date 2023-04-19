@@ -7,6 +7,7 @@ class Utils {
         private const val MINUTE_MILLIS = 60 * SECOND_MILLIS
         private const val HOUR_MILLIS = 60 * MINUTE_MILLIS
         private const val DAY_MILLIS = 24 * HOUR_MILLIS
+        private const val WEEK_MILLIS = 7 * DAY_MILLIS
 
         fun getTimeAgo(time: Long): String? {
             val now: Long = System.currentTimeMillis()
@@ -27,8 +28,10 @@ class Utils {
                 (diff / HOUR_MILLIS).toString() + " hours ago"
             } else if (diff < 48 * HOUR_MILLIS) {
                 "yesterday"
-            } else {
+            } else if (diff <= 7 * DAY_MILLIS) {
                 (diff / DAY_MILLIS).toString() + " days ago"
+            } else{
+                (diff / WEEK_MILLIS).toString() + " weeks ago"
             }
         }
 

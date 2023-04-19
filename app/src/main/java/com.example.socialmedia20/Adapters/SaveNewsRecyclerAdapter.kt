@@ -6,23 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation
 import com.bumptech.glide.Glide
 import com.example.socialmedia20.Data.News
-import com.example.socialmedia20.NewsItemClicked
 import com.example.socialmedia20.R
-import com.example.socialmedia20.RoomDatabase.DbAsyncTask
-import org.w3c.dom.Text
 
-class SaveRecyclerAdapter(
+class SaveNewsRecyclerAdapter(
     val context: Context,
     val newsList: List<News>,
-    private val listener: SaveItemClicked,
+    private val listener: SaveItemClicked
 ) :
-    RecyclerView.Adapter<SaveRecyclerAdapter.SaveViewHolder>() {
+    RecyclerView.Adapter<SaveNewsRecyclerAdapter.SaveViewHolder>() {
     class SaveViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.findViewById(R.id.newsTitle)
         val author: TextView = itemView.findViewById(R.id.authorTitle)
@@ -43,7 +38,7 @@ class SaveRecyclerAdapter(
         }
 
         viewHolder.deleteBtn.setOnClickListener {
-           listener.onDeleteClick(newsList[viewHolder.adapterPosition])
+            listener.onDeleteClick(newsList[viewHolder.adapterPosition])
         }
         return viewHolder
     }
