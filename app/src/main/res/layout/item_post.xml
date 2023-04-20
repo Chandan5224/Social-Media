@@ -89,9 +89,9 @@
 
         <ImageView
             android:id="@+id/likeButton"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
+            android:layout_marginTop="10dp"
             android:src="@drawable/ic_unliked"
             app:layout_constraintStart_toStartOf="@+id/userImage"
             app:layout_constraintTop_toBottomOf="@+id/postImage" />
@@ -109,18 +109,18 @@
 
         <ImageView
             android:id="@+id/cmtButton"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="12dp"
             android:src="@drawable/ic_outline_mode_comment_24"
             app:layout_constraintStart_toEndOf="@+id/likeCount"
             app:layout_constraintTop_toBottomOf="@+id/postImage" />
 
         <ImageView
             android:id="@+id/shareButton"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:src="@drawable/ic_baseline_share"
@@ -133,7 +133,7 @@
             android:id="@+id/saveButton"
             android:layout_width="29dp"
             android:layout_height="29dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
             android:src="@drawable/ic_baseline_bookmark_border_24"
             app:layout_constraintEnd_toEndOf="parent"

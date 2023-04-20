@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,12 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.example.socialmedia20.R
+import com.google.common.reflect.Reflection.getPackageName
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -68,7 +75,7 @@ class Memes : Fragment() {
                 val contentResolver = requireActivity().contentResolver
                 val pat = MediaStore.Images.Media.insertImage(contentResolver, bitmap, null, null)
                 val intent = Intent(Intent.ACTION_SEND)
-                intent.type = "image/gif"
+                intent.type = "image/*"
                 intent.type = "text/*"
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(pat))
@@ -89,15 +96,37 @@ class Memes : Fragment() {
         return root
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Memes().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun shareGif(resourceName: String) {
+        val baseDir = Environment.getExternalStorageDirectory().absolutePath
+        val fileName = "sharingGif.gif"
+        val sharingGifFile = File(baseDir, fileName)
+        try {
+            val readData = ByteArray(1024 * 500)
+            val fis: InputStream = resources.openRawResource(
+                resources.getIdentifier(
+                    resourceName,
+                    "drawable",
+                    getPackageName()
+                )
+            )
+            val fos = FileOutputStream(sharingGifFile)
+            var i: Int = fis.read(readData)
+            while (i != -1) {
+                fos.write(readData, 0, i)
+                i = fis.read(readData)
             }
+            fos.close()
+        } catch (io: IOException) {
+        }
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "image/gif"
+        val uri = Uri.fromFile(sharingGifFile)
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        startActivity(Intent.createChooser(shareIntent, "Share Emoji"))
+    }
+
+    private fun getPackageName(): String? {
+        TODO("Not yet implemented")
     }
 
     private fun LoadMeme() {

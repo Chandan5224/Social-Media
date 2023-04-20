@@ -75,12 +75,20 @@
                 android:id="@+id/btn1"
                 android:background="@drawable/technology"
                 android:layout_width="140dp"
+                android:text="Technology"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/aclonica"
                 android:layout_height="match_parent"
                 android:layout_marginStart="10dp" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn2"
                 android:layout_width="140dp"
+                android:text="Sports"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/aclonica"
                 android:layout_height="match_parent"
                 android:background="@drawable/sports"
                 android:layout_marginStart="10dp" />
@@ -89,19 +97,31 @@
                 android:id="@+id/btn3"
                 android:background="@drawable/politics"
                 android:layout_width="140dp"
+                android:text="Politics"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/aclonica"
                 android:layout_height="match_parent"
                 android:layout_marginStart="10dp" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn4"
                 android:background="@drawable/business"
+                android:text="Business"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/aclonica"
                 android:layout_width="140dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="10dp" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn5"
-                android:background="@drawable/health"
+                android:background="@drawable/healthy_"
+                android:text="Healthy"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/aclonica"
                 android:layout_width="140dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="10dp" />
@@ -110,6 +130,11 @@
                 android:id="@+id/btn6"
                 android:background="@drawable/entertainment"
                 android:layout_width="140dp"
+                android:layout_marginEnd="10dp"
+                android:text="Entertainment"
+                android:textSize="15sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/aclonica"
                 android:layout_height="match_parent"
                 android:layout_marginStart="10dp" />
 

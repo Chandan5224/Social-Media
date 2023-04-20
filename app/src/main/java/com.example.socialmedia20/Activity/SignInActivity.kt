@@ -33,7 +33,7 @@ import kotlinx.coroutines.tasks.await
 import java.io.File
 
 
-class SignInActivity : AppCompatActivity() {
+class   SignInActivity : AppCompatActivity() {
 
     private val RC_SIGN_IN: Int =123
     private lateinit var binding: ActivitySignInBinding

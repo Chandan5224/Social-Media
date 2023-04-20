@@ -21,7 +21,7 @@
             android:id="@+id/newsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_margin="10dp"
             android:maxLines="2"
             android:text="Title"
             android:textColor="@color/black"
@@ -29,13 +29,14 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp">
 
             <TextView
                 android:id="@+id/authorTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="10dp"
                 android:maxLength="20"
                 android:text="Title"
                 android:textColor="@color/black"
@@ -57,10 +58,9 @@
 
             <ImageView
                 android:id="@+id/shareB"
-                android:layout_width="38dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="5dp"
-                android:scaleType="center"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
+                android:layout_marginEnd="10dp"
                 android:src="@drawable/ic_baseline_share"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -69,14 +69,13 @@
 
             <ImageView
                 android:id="@+id/saveBtn"
-                android:layout_width="38dp"
-                android:layout_height="36dp"
-                android:scaleType="center"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
+                android:layout_marginEnd="10dp"
                 android:src="@drawable/ic_baseline_bookmark_border_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/shareB"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>

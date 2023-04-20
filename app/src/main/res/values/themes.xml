@@ -14,8 +14,8 @@
         //For Status Bar Icons
         <item name="android:windowLightStatusBar">true</item>
 
-        // ///     default splash screen hide
-        <item name="android:windowIsTranslucent">true</item>
+        // ///     default splash screen hide make true
+        <item name="android:windowIsTranslucent">false</item>
 
         <item name="android:actionButtonStyle">@style/ActionButton</item>
         <!-- Customize your theme here. -->
