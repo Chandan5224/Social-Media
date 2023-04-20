@@ -2,6 +2,8 @@ package com.example.socialmedia20.RoomDatabase
 
 import android.content.Context
 import androidx.room.*
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.socialmedia20.Data.DataConverter
 import com.example.socialmedia20.Data.Post
 import com.example.socialmedia20.Data.PostDao
@@ -9,7 +11,7 @@ import com.example.socialmedia20.Data.PostDao
 
 @Database(entities = [Post::class], version = 1)
 @TypeConverters(DataConverter::class)
-abstract class PostDatabase:RoomDatabase() {
+abstract class PostDatabase : RoomDatabase() {
     abstract fun postDao(): PostDao.PostDaoRoomDB
 
     companion object {
@@ -21,7 +23,7 @@ abstract class PostDatabase:RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     PostDatabase::class.java,
-                    "post_db"
+                    "post__db"
                 )
                     .build()
                 INSTANCE = instance

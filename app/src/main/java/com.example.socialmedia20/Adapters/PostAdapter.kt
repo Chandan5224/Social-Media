@@ -106,6 +106,7 @@ class PostAdapter(
             if (!PostDbAsyncTask(context, model, 1).execute()
                     .get()
             ) {
+                model.saveTime = System.currentTimeMillis()
                 val async =
                     PostDbAsyncTask(context, model, 2).execute()
                 if (async.get()) {

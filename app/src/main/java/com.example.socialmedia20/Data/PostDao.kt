@@ -29,7 +29,7 @@ class PostDao {
         @Delete
         fun deletePost(post: Post)
 
-        @Query("SELECT * FROM posts")
+        @Query("SELECT * FROM posts ORDER BY saveTime DESC")
         fun getAll(): List<Post>
 
         @Query("DELETE FROM posts")

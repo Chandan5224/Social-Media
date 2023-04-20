@@ -14,7 +14,7 @@ interface NewsDao {
     @Delete
      fun deleteNews(news: News)
 
-    @Query("SELECT * FROM news")
+    @Query("SELECT * FROM news ORDER BY saveTime DESC")
     fun getAll(): List<News>
 
     @Query("DELETE FROM news")

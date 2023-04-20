@@ -36,6 +36,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.orhanobut.dialogplus.DialogPlus
 import com.orhanobut.dialogplus.ViewHolder
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -57,7 +58,6 @@ class MainActivity : AppCompatActivity() {
         // set custom toolbar
         binding.toolbar.title = ""
         setSupportActionBar(binding.toolbar)
-
         getImage =
             registerForActivityResult(ActivityResultContracts.GetContent(), ActivityResultCallback {
                 if (it != null) {

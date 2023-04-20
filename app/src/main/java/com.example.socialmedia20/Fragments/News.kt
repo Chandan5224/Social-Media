@@ -123,7 +123,6 @@ class News : Fragment(), NewsItemClicked {
                 binding.catTextview.visibility = View.VISIBLE
                 return true
             }
-
         })
 
         val state = intArrayOf(1)
@@ -227,13 +226,13 @@ class News : Fragment(), NewsItemClicked {
                 val newsArray = ArrayList<News>()
                 for (i in 0 until newsJsonArray.length()) {
                     val newsJsonObject = newsJsonArray.getJSONObject(i)
-                    val id = getRandomString(10)
                     val news = News(
                         newsJsonObject.getString("title"),
                         newsJsonObject.getJSONObject("source").getString("name"),
                         newsJsonObject.getString("url"),
                         newsJsonObject.getString("urlToImage"),
-                        newsJsonObject.getString("publishedAt")
+                        newsJsonObject.getString("publishedAt"),
+                        0
                     )
                     newsArray.add(news)
                 }
@@ -252,13 +251,6 @@ class News : Fragment(), NewsItemClicked {
         }
 
         MySingleton.getInstance(binding.root.context).addToRequestQueue(jsonObjectRequest)
-    }
-
-    private fun getRandomString(length: Int): String {
-        val allowedChars = ('0'..'9')
-        return (1..length)
-            .map { allowedChars.random() }
-            .joinToString("")
     }
 
 

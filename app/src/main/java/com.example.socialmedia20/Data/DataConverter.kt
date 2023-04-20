@@ -27,4 +27,5 @@ class DataConverter {
         val listType= object : TypeToken<User>(){}.type
         return Gson().fromJson(dataString,listType)
     }
+
 }

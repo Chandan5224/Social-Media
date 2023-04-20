@@ -30,6 +30,7 @@ class NewsAdapter(private val listener: NewsItemClicked, val context: Context) :
 
         viewHolder.itemView.findViewById<ImageView>(R.id.saveBtn).setOnClickListener {
             if (!DbAsyncTask(context, items[viewHolder.adapterPosition], 1).execute().get()) {
+                items[viewHolder.adapterPosition].saveTime = System.currentTimeMillis()
                 val async = DbAsyncTask(context, items[viewHolder.adapterPosition], 2).execute()
                 if (async.get()) {
                     viewHolder.itemView.findViewById<ImageView>(R.id.saveBtn).setImageDrawable(
