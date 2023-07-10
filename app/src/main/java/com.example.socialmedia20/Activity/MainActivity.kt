@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.example.socialmedia20.Adapters.VPAdapter
 import com.example.socialmedia20.Data.PostDao
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var getImage: ActivityResultLauncher<String?>
     lateinit var dialogPlus: DialogPlus
     var check = true
+    var postingCheck = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +67,8 @@ class MainActivity : AppCompatActivity() {
                     dialogPlus.holderView.findViewById<ImageView>(R.id.editImage).setImageURI(it)
                     check = false
                 } else {
-                    dialogPlus.holderView.findViewById<ImageView>(R.id.editImage).setImageDrawable(getDrawable(R.drawable.upload2))
+                    dialogPlus.holderView.findViewById<ImageView>(R.id.editImage)
+                        .setImageDrawable(getDrawable(R.drawable.upload2))
                 }
             })
 
@@ -74,6 +77,32 @@ class MainActivity : AppCompatActivity() {
         }
         // Call
         setupViewPager()
+
+        binding.viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                if (binding.viewPager.currentItem != 0) {
+                    supportActionBar?.hide()
+                } else {
+                    supportActionBar?.show()
+                }
+                if (binding.uploadLoader.isShimmerVisible && postingCheck && binding.viewPager.currentItem != 0) {
+                    binding.uploadLoader.visibility = View.GONE
+                } else if (binding.uploadLoader.isShimmerVisible && postingCheck && binding.viewPager.currentItem == 0) {
+                    binding.uploadLoader.visibility = View.VISIBLE
+                }
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+        })
     }
 
 
@@ -84,14 +113,14 @@ class MainActivity : AppCompatActivity() {
             add(Home(), "")
             add(Memes(), "")
             add(News(), "")
-            add(SaveFrag(),"")
+            add(SaveFrag(), "")
         }
 
         binding.viewPager.adapter = vpAdapter
         binding.tabLayout.getTabAt(0)!!.setIcon(R.drawable.ic_baseline_home_24).tag = "home"
         binding.tabLayout.getTabAt(1)!!.setIcon(R.drawable.ic_baseline_tag_faces_24).tag = "meme"
         binding.tabLayout.getTabAt(2)!!.setIcon(R.drawable.ic_news).tag = "news"
-        binding.tabLayout.getTabAt(3)!!.setIcon(R.drawable.ic_baseline_bookmark_24).tag="save"
+        binding.tabLayout.getTabAt(3)!!.setIcon(R.drawable.ic_baseline_bookmark_24).tag = "save"
         binding.tabLayout.tabGravity = TabLayout.GRAVITY_FILL
 
         binding.tabLayout.getTabAt(0)!!.icon!!.setColorFilter(
@@ -117,10 +146,10 @@ class MainActivity : AppCompatActivity() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val tabIconColor = ContextCompat.getColor(this@MainActivity, R.color.mainColor)
                 tab!!.icon!!.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN)
-                if (tab.tag == "home")
-                    supportActionBar!!.show()
-                else
-                    supportActionBar!!.hide()
+//                if (tab.tag == "home")
+//                    supportActionBar!!.show()
+//                else
+//                    supportActionBar!!.hide()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -200,21 +229,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         postBtn.setOnClickListener {
-            binding.uploadLoader.visibility=View.VISIBLE
-            binding.uploadLoader.startShimmer()
             val inputTitle = postTitle.text.toString().trim()
             if (inputTitle.isNotEmpty() && !check) {
+                postingCheck = true
+                binding.uploadLoader.visibility = View.VISIBLE
+                binding.uploadLoader.startShimmer()
                 var storageRef = FirebaseStorage.getInstance().reference.child("images")
                 storageRef = storageRef.child(System.currentTimeMillis().toString())
                 storageRef.putFile(imageUri).addOnCompleteListener {
                     if (it.isSuccessful) {
                         binding.uploadLoader.stopShimmer()
-                        binding.uploadLoader.visibility=View.GONE
+                        binding.uploadLoader.visibility = View.GONE
                         storageRef.downloadUrl.addOnSuccessListener { uri ->
                             imageUrl = uri.toString()
                             postDao.addPost(inputTitle, imageUrl)
                         }
                         Toast.makeText(this, "Post Added !!", Toast.LENGTH_SHORT).show()
+                        postingCheck = false
                     } else {
                         Toast.makeText(this, it.exception?.message, Toast.LENGTH_SHORT).show()
                     }
