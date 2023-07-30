@@ -224,7 +224,7 @@ class MainActivity : AppCompatActivity() {
             dialogPlus.dismiss()
         }
         dialogPlus.holderView.findViewById<ImageView>(R.id.editImage).setOnClickListener {
-            requestPermission()
+//            requestPermission()
             getImage.launch("image/*")
         }
 
@@ -299,15 +299,15 @@ class MainActivity : AppCompatActivity() {
         alertDialog.show()
     }
 
-    private fun requestPermission() {
-        //GuidebyGoogleDevelopers
-        if (ContextCompat.checkSelfPermission(
-                binding.root.context, android.Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 100)
-        }
-    }
+//    private fun requestPermission() {
+//        //GuidebyGoogleDevelopers
+//        if (ContextCompat.checkSelfPermission(
+//                binding.root.context, android.Manifest.permission.READ_EXTERNAL_STORAGE
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 100)
+//        }
+//    }
 
     override fun onBackPressed() {
         if (dialogPlus.isShowing)

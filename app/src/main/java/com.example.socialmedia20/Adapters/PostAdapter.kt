@@ -2,6 +2,7 @@ package com.example.socialmedia20.Adapters
 
 import android.animation.Animator
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.example.socialmedia20.Data.*
 import com.example.socialmedia20.R
 import com.example.socialmedia20.RoomDatabase.PostDatabase
@@ -26,10 +31,9 @@ class PostAdapter(
     options: FirestoreRecyclerOptions<Post>,
     private val listener: IPostAdapter,
     private val context: Context
-) :
-    FirestoreRecyclerAdapter<Post, PostAdapter.PostViewHolder>(
-        options
-    ) {
+) : FirestoreRecyclerAdapter<Post, PostAdapter.PostViewHolder>(
+    options
+) {
 
     class PostViewHolder(itemView: android.view.View) : RecyclerView.ViewHolder(itemView) {
         lateinit var postText: TextView
@@ -68,6 +72,7 @@ class PostAdapter(
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int, model: Post) {
+
         holder.postText.text = model.text
         holder.userText.text = model.createdBy.displayName
         Glide.with(holder.userImage.context).load(model.createdBy.imageUrl).circleCrop()
@@ -83,15 +88,13 @@ class PostAdapter(
         if (isLiked) {
             holder.likeButton.setImageDrawable(
                 ContextCompat.getDrawable(
-                    holder.likeButton.context,
-                    R.drawable.ic_liked
+                    holder.likeButton.context, R.drawable.ic_liked
                 )
             )
         } else {
             holder.likeButton.setImageDrawable(
                 ContextCompat.getDrawable(
-                    holder.likeButton.context,
-                    R.drawable.ic_unliked
+                    holder.likeButton.context, R.drawable.ic_unliked
                 )
             )
         }
@@ -103,30 +106,24 @@ class PostAdapter(
         /// For Clicked Items
 
         holder.saveBtn.setOnClickListener {
-            if (!PostDbAsyncTask(context, model, 1).execute()
-                    .get()
-            ) {
+            if (!PostDbAsyncTask(context, model, 1).execute().get()) {
                 model.saveTime = System.currentTimeMillis()
-                val async =
-                    PostDbAsyncTask(context, model, 2).execute()
+                val async = PostDbAsyncTask(context, model, 2).execute()
                 if (async.get()) {
                     holder.saveBtn.setImageDrawable(
                         ContextCompat.getDrawable(
-                            context,
-                            R.drawable.ic_baseline_bookmark_24
+                            context, R.drawable.ic_baseline_bookmark_24
                         )
                     )
                 } else {
                     Toast.makeText(context, "Some error occurred!", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                val async =
-                    PostDbAsyncTask(context, model, 3).execute()
+                val async = PostDbAsyncTask(context, model, 3).execute()
                 if (async.get()) {
                     holder.saveBtn.setImageDrawable(
                         ContextCompat.getDrawable(
-                            context,
-                            R.drawable.ic_baseline_bookmark_border_24
+                            context, R.drawable.ic_baseline_bookmark_border_24
                         )
                     )
                 } else {
@@ -140,15 +137,13 @@ class PostAdapter(
         if (isSave.get()) {
             holder.saveBtn.setImageDrawable(
                 ContextCompat.getDrawable(
-                    holder.itemView.context,
-                    R.drawable.ic_baseline_bookmark_24
+                    holder.itemView.context, R.drawable.ic_baseline_bookmark_24
                 )
             )
         } else {
             holder.saveBtn.setImageDrawable(
                 ContextCompat.getDrawable(
-                    holder.itemView.context,
-                    R.drawable.ic_baseline_bookmark_border_24
+                    holder.itemView.context, R.drawable.ic_baseline_bookmark_border_24
                 )
             )
         }
@@ -172,7 +167,8 @@ class PostAdapter(
             listener.onMenu(it, model.uid, model)
         }
         holder.shareBtn.setOnClickListener {
-            listener.onSharePost(model, holder.image)
+            if (holder.image.drawable != null)
+                listener.onSharePost(model, holder.image)
         }
 
         holder.lottieAnimationView.addAnimatorListener(object : Animator.AnimatorListener {

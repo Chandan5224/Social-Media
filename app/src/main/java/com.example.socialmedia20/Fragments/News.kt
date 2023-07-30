@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SearchView.OnCloseListener
@@ -109,21 +110,12 @@ class News : Fragment(), NewsItemClicked {
             }
         })
 
-        binding.searchNews.setOnCloseListener( object : View.OnClickListener,
-            SearchView.OnCloseListener {
-            override fun onClick(v: View?) {
-                binding.searchNews.visibility = View.GONE
-                binding.searchImageview.visibility = View.VISIBLE
-                binding.catTextview.visibility = View.VISIBLE
-            }
-
-            override fun onClose(): Boolean {
-                binding.searchNews.visibility = View.GONE
-                binding.searchImageview.visibility = View.VISIBLE
-                binding.catTextview.visibility = View.VISIBLE
-                return true
-            }
-        })
+        binding.searchNews.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn).setOnClickListener {
+            binding.searchNews.setQuery("",true)
+            binding.searchNews.visibility = View.GONE
+            binding.searchImageview.visibility = View.VISIBLE
+            binding.catTextview.visibility = View.VISIBLE
+        }
 
         val state = intArrayOf(1)
 
@@ -150,36 +142,42 @@ class News : Fragment(), NewsItemClicked {
             binding.newsView.visibility = View.GONE
             binding.shimmerNews.visibility = View.VISIBLE
             binding.shimmerNews.startShimmer()
+//            binding.catTextview.text="Technology"
             fetchData("technology")
         }
         binding.btn2.setOnClickListener {
             binding.newsView.visibility = View.GONE
             binding.shimmerNews.visibility = View.VISIBLE
             binding.shimmerNews.startShimmer()
+//            binding.catTextview.text="Sports"
             fetchData("sports")
         }
         binding.btn3.setOnClickListener {
             binding.newsView.visibility = View.GONE
             binding.shimmerNews.visibility = View.VISIBLE
             binding.shimmerNews.startShimmer()
+//            binding.catTextview.text="Politics"
             fetchData("politics")
         }
         binding.btn4.setOnClickListener {
             binding.newsView.visibility = View.GONE
             binding.shimmerNews.visibility = View.VISIBLE
             binding.shimmerNews.startShimmer()
+//            binding.catTextview.text="Business"
             fetchData("business")
         }
         binding.btn5.setOnClickListener {
             binding.newsView.visibility = View.GONE
             binding.shimmerNews.visibility = View.VISIBLE
             binding.shimmerNews.startShimmer()
+//            binding.catTextview.text="Health"
             fetchData("health")
         }
         binding.btn6.setOnClickListener {
             binding.newsView.visibility = View.GONE
             binding.shimmerNews.visibility = View.VISIBLE
             binding.shimmerNews.startShimmer()
+//            binding.catTextview.text="Entertainment"
             fetchData("entertainment")
         }
 
