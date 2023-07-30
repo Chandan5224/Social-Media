@@ -5,4 +5,28 @@
     <string name="hint">What do you want to talk about?</string>
     <string name="dialogTitle">Discard edits?</string>
     <string name="dialogMessage">If you go back now, you\'ll lose all the edits you\'ve made</string>
+    <string name="preference_file_name">Users</string>
+    <string name="terms_and_conditions">
+Welcome to our social media app! We are thrilled to have you as part of our community. By using our platform, you agree to abide by the following terms and conditions to ensure a positive and safe environment for all users.
+
+\n\n1. No Verbal Abuse: We promote a respectful and inclusive community. Any form of verbal abuse, harassment, or hate speech towards other users will not be tolerated. Be kind and considerate in your interactions.
+
+\n\n2. No Pornography: Our platform strictly prohibits the sharing or posting of explicit, pornographic, or adult content. Users found violating this rule will face immediate actions, including the possibility of account suspension.
+
+\n\n3. No Violation of Laws or Rights: Users are expected to comply with all applicable laws and regulations while using our social media app. Any content or actions that violate the rights of others, including intellectual property rights, will be subject to removal and potential legal consequences.
+
+\n\n4. Immediate Action on Reports: We take user reports seriously. If you encounter any inappropriate content or behavior, please report it using the designated reporting system. Our team will investigate promptly and take necessary actions to maintain a safe environment.
+
+\n\n5. Respect Privacy: Respect the privacy of others and refrain from sharing personal information without explicit consent. Any violation of privacy will be addressed accordingly.
+
+\n\n6. No Spam or Misleading Content: Users are not allowed to engage in spamming, phishing, or any activities that mislead others. Content should be genuine and relevant to the community.
+
+\n\n7. Age Restriction: Our app is intended for users above a certain age limit as defined by local laws. Users must be of the specified age or older to register and use the platform.
+
+\n\n8. Appropriate Content: All content shared on the app must be appropriate for a diverse audience. Avoid sharing content that is violent, graphic, or excessively disturbing.
+
+\n\n9. Account Responsibility: Users are responsible for maintaining the security of their accounts. Sharing login credentials or engaging in unauthorized account access is strictly prohibited.
+
+\n\n10. Suspension or Termination: We reserve the right to suspend or terminate any user account found violating the terms and conditions without prior notice.
+        \n\nBy using our social media app, you acknowledge and agree to these terms and conditions. Please review them regularly, as we may update or modify them from time to time to ensure the best user experience. We are committed to providing a platform where everyone can connect, share, and engage positively. Thank you for being part of our community! </string>
 </resources>
