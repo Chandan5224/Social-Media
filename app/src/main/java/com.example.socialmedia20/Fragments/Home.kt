@@ -29,6 +29,7 @@ import com.example.socialmedia20.Data.PostDao
 import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.FragmentHomeBinding
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -117,20 +118,21 @@ class Home : Fragment(), IPostAdapter {
 //        }
 //        requireActivity().onBackPressedDispatcher.addCallback(callback)
         val state = intArrayOf(1)
-        binding.trendingView.addOnScrollListener(object : RecyclerView.OnScrollListener()
-        {
+        binding.trendingView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                state[0]=newState
+                state[0] = newState
             }
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy > 0 && (state[0] == 0 || state[0] == 2)) {
-                    requireActivity().findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).visibility = View.GONE
+                    requireActivity().findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).visibility =
+                        View.GONE
                 } else if (dy < -10) {
 
-                    requireActivity().findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).visibility = View.VISIBLE
+                    requireActivity().findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar).visibility =
+                        View.VISIBLE
                 }
             }
         })
@@ -192,26 +194,6 @@ class Home : Fragment(), IPostAdapter {
         mAdapter.stopListening()
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Trending.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Home().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
-
     override fun onLikeClicked(postId: String) {
         postDao.updateLikes(postId)
     }
@@ -238,6 +220,9 @@ class Home : Fragment(), IPostAdapter {
             .setExpanded(true, 1300)
             .setCancelable(true)
             .create()
+        dialogPlus.holderView.findViewById<EditText>(R.id.editTitle).visibility = View.GONE
+        dialogPlus.holderView.findViewById<ImageView>(R.id.editImage).visibility = View.GONE
+        dialogPlus.holderView.findViewById<MaterialButton>(R.id.saveBtn).visibility = View.GONE
         dialogPlus.holderView.findViewById<TextView>(R.id.title_).text = "Comments"
         dialogPlus.show()
 

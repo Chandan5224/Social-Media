@@ -29,4 +29,6 @@ Welcome to our social media app! We are thrilled to have you as part of our comm
 
 \n\n10. Suspension or Termination: We reserve the right to suspend or terminate any user account found violating the terms and conditions without prior notice.
         \n\nBy using our social media app, you acknowledge and agree to these terms and conditions. Please review them regularly, as we may update or modify them from time to time to ensure the best user experience. We are committed to providing a platform where everyone can connect, share, and engage positively. Thank you for being part of our community! </string>
+    <string name="terms"><![CDATA[By continuing, you agree to Social Media]]></string>
+    <string name="terms_con"><![CDATA[Terms & Condition, Privacy Policy]]></string>
 </resources>

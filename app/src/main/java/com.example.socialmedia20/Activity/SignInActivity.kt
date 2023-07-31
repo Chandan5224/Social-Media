@@ -59,7 +59,6 @@ class SignInActivity : AppCompatActivity() {
             showCustomAlertDialog()
         }
 
-
         if (!checkForInternet(binding.root.context)) {
             Toast.makeText(this, "Connect To The Internet", Toast.LENGTH_LONG).show()
         }
@@ -75,6 +74,9 @@ class SignInActivity : AppCompatActivity() {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         auth = Firebase.auth
 
+        binding.termBtn.setOnClickListener {
+            showCustomAlertDialog()
+        }
         binding.signINBtn.setOnClickListener {
             signIn()
         }
@@ -142,6 +144,7 @@ class SignInActivity : AppCompatActivity() {
         binding.welText.visibility = View.GONE
         binding.tagLine.visibility = View.GONE
         binding.lottieAnimationView.visibility = View.GONE
+        binding.termView.visibility = View.GONE
 
         GlobalScope.launch(Dispatchers.IO) {
             val auth = auth.signInWithCredential(credential).await()
@@ -172,6 +175,7 @@ class SignInActivity : AppCompatActivity() {
             binding.welText.visibility = View.VISIBLE
             binding.tagLine.visibility = View.VISIBLE
             binding.lottieAnimationView.visibility = View.VISIBLE
+            binding.termView.visibility = View.VISIBLE
         }
     }
 
