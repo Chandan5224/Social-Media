@@ -25,8 +25,9 @@ Features:
 Join our ever-growing community of users and embark on an exciting journey of connection, creativity, and discovery. Download our Social Media app now and be a part of something extraordinary!
 
 # Screenshot 
-![first ss](https://github.com/Chandan5224/Social-Media/assets/86766647/14f1b23a-fce1-41b3-80a3-19b24b75d5c0)
-![second ss](https://github.com/Chandan5224/Social-Media/assets/86766647/de7860bd-5b9a-4063-b9aa-641e69d7ae6f)
+![1](https://github.com/Chandan5224/Social-Media/assets/86766647/220aae23-dae7-43da-9554-e7be0d1b9f1a)
+![2](https://github.com/Chandan5224/Social-Media/assets/86766647/dc9b8f15-2059-451b-8035-e42e5b1a6ce3)
+
 
 
 
