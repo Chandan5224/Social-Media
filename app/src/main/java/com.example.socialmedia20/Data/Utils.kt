@@ -1,5 +1,7 @@
 package com.example.socialmedia20.Data
 
+import java.lang.Math.round
+
 class Utils {
 
     companion object {
@@ -8,6 +10,22 @@ class Utils {
         private const val HOUR_MILLIS = 60 * MINUTE_MILLIS
         private const val DAY_MILLIS = 24 * HOUR_MILLIS
         private const val WEEK_MILLIS = 7 * DAY_MILLIS
+        private const val K = 1000
+        private const val M = 1000000
+
+        fun formatCount(likeCount: Int): String {
+            return when {
+                likeCount >= M -> {
+                    val countK = likeCount.toFloat() / M
+                    String.format("%.1fM", countK)
+                }
+                likeCount >= K -> {
+                    val countK = likeCount.toFloat() / K
+                    String.format("%.1fK", countK)
+                }
+                else -> likeCount.toString()
+            }
+        }
 
         fun getTimeAgo(time: Long): String? {
             val now: Long = System.currentTimeMillis()
@@ -30,7 +48,7 @@ class Utils {
                 "yesterday"
             } else if (diff <= 7 * DAY_MILLIS) {
                 (diff / DAY_MILLIS).toString() + " days ago"
-            } else{
+            } else {
                 (diff / WEEK_MILLIS).toString() + " weeks ago"
             }
         }

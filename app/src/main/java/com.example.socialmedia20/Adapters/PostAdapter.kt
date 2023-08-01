@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.AsyncTask
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -78,7 +79,7 @@ class PostAdapter(
         Glide.with(holder.userImage.context).load(model.createdBy.imageUrl).circleCrop()
             .into(holder.userImage)
         Glide.with(holder.image.context).load(model.imageUrl).into(holder.image)
-        holder.likeCount.text = model.likedBy.size.toString()
+        holder.likeCount.text = Utils.formatCount(model.likedBy.size)
         holder.createdAt.text = Utils.getTimeAgo(model.createdAt)
 
         // check the user already like the post or not

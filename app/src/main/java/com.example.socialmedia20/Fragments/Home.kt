@@ -1,3 +1,5 @@
+@file:Suppress("NAME_SHADOWING")
+
 package com.example.socialmedia20.Fragments
 
 import android.content.ContentValues.TAG
@@ -26,6 +28,8 @@ import com.example.socialmedia20.Adapters.IPostAdapter
 import com.example.socialmedia20.Adapters.PostAdapter
 import com.example.socialmedia20.Data.Post
 import com.example.socialmedia20.Data.PostDao
+import com.example.socialmedia20.Data.Report
+import com.example.socialmedia20.Data.ReportDao
 import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.FragmentHomeBinding
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -236,107 +240,154 @@ class Home : Fragment(), IPostAdapter {
         postDao.updateSave(post)
     }
 
+
     override fun onMenu(view: View, postId: String, post: Post) {
         val popupMenus = PopupMenu(view.context, view)
-        popupMenus.inflate(R.menu.post_menu)
+        val auth = Firebase.auth
+        if (auth.currentUser!!.uid == post.createdBy.uid)
+            popupMenus.inflate(R.menu.post_menu)
+        else
+            popupMenus.inflate(R.menu.post_report_menu)
 
         popupMenus.setOnMenuItemClickListener {
 
-            val auth = Firebase.auth
             val postDao = PostDao()
 
             when (it.itemId) {
-                R.id.editBtn -> {
-                    if (auth.currentUser!!.uid == post.createdBy.uid) {
-                        dialogPlus = DialogPlus.newDialog(view.context)
-                            .setContentHolder(ViewHolder(R.layout.edit_post))
-                            .setExpanded(true, 1300)
-                            .setCancelable(true)
-                            .create()
+                R.id.reportBtn -> {
+                    var reportMes = ""
+                    dialogPlus = DialogPlus.newDialog(view.context)
+                        .setContentHolder(ViewHolder(R.layout.report_popup))
+                        .setExpanded(true, 1300)
+                        .setCancelable(true)
+                        .create()
 
-                        val view = dialogPlus.holderView
-                        val image = view.findViewById<ImageView>(R.id.editImage)
-                        val text = view.findViewById<EditText>(R.id.editTitle)
-                        val saveBtn = view.findViewById<Button>(R.id.saveBtn)
-                        val cancelBtn = view.findViewById<ImageView>(R.id.cancelBtn)
-                        val title = view.findViewById<TextView>(R.id.title_)
+                    dialogPlus.show()
 
-                        title.text = "Edit Post"
-                        text.setText(post.text)
-                        Glide.with(view.context).load(post.imageUrl).into(image)
-
-                        dialogPlus.show()
-                        cancelBtn.setOnClickListener {
-                            dialogPlus.dismiss()
-                        }
-                        dialogPlus.holderView.findViewById<ImageView>(R.id.editImage)
-                            .setOnClickListener {
-                                requestPermission()
-                                getImage.launch("image/*")
-                            }
-
-                        saveBtn.setOnClickListener {
-                            if (!check) {
-                                var storageRef =
-                                    FirebaseStorage.getInstance().reference.child("images")
-                                storageRef = storageRef.child(System.currentTimeMillis().toString())
-                                storageRef.putFile(imageUri).addOnCompleteListener {
-                                    if (it.isSuccessful) {
-                                        storageRef.downloadUrl.addOnSuccessListener { uri ->
-                                            imageUrl = uri.toString()
-                                            postDao.updatePost(
-                                                text.text.toString(),
-                                                imageUrl,
-                                                postId
-                                            )
-                                        }
-                                        Toast.makeText(context, "Updated !!", Toast.LENGTH_SHORT)
-                                            .show()
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            it.exception?.message,
-                                            Toast.LENGTH_SHORT
-                                        )
-                                            .show()
-                                    }
-                                }.addOnFailureListener {
-                                    Toast.makeText(context, "Failed !!", Toast.LENGTH_SHORT).show()
+                    val view = dialogPlus.holderView
+                    view.findViewById<RadioGroup>(R.id.reportRadioGroup)
+                        .setOnCheckedChangeListener { group, checkedId ->
+                            when (checkedId) {
+                                R.id.abuseRBtn -> {
+                                    reportMes = "Hateful or abuse content"
                                 }
-                            } else {
-                                postDao.updatePost(text.text.toString(), post.imageUrl, post.uid)
+                                R.id.HarmfulRBtn -> {
+                                    reportMes = "Harmful or dangerous acts"
+                                }
+                                R.id.childRBtn -> {
+                                    reportMes = "Child abuse"
+                                }
+                                R.id.sexRBtn -> {
+                                    reportMes = "Sex content"
+                                }
+                                R.id.spamRBtn -> {
+                                    reportMes = "Spam or misleading"
+                                }
+                                R.id.terrorismRBtn -> {
+                                    reportMes = "Promote terrorism"
+                                }
+                                R.id.violentRBtn -> {
+                                    reportMes = "Violent or repulsive content"
+                                }
                             }
-                            check = true
-                            dialogPlus.dismiss()
                         }
-                    } else {
-                        Toast.makeText(
-                            view.context,
-                            "You can't modify others posts!!",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    view.findViewById<MaterialButton>(R.id.reportBtn).setOnClickListener {
+                        if (reportMes != "") {
+                            val user = auth.currentUser!!
+                            val report =
+                                Report(
+                                    getRandomString(15),
+                                    user.uid,
+                                    user.displayName!!,
+                                    user.email!!,
+                                    reportMes,
+                                    post
+                                )
+                            ReportDao().addReport(report)
+                            Toast.makeText(context, "Report Submitted", Toast.LENGTH_SHORT).show()
+                            dialogPlus.dismiss()
+                        } else {
+                            Toast.makeText(context, "Select one option", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    true
+                }
+                R.id.editBtn -> {
+
+                    dialogPlus = DialogPlus.newDialog(view.context)
+                        .setContentHolder(ViewHolder(R.layout.edit_post))
+                        .setExpanded(true, 1300)
+                        .setCancelable(true)
+                        .create()
+
+                    val view = dialogPlus.holderView
+                    val image = view.findViewById<ImageView>(R.id.editImage)
+                    val text = view.findViewById<EditText>(R.id.editTitle)
+                    val saveBtn = view.findViewById<Button>(R.id.saveBtn)
+                    val cancelBtn = view.findViewById<ImageView>(R.id.cancelBtn)
+                    val title = view.findViewById<TextView>(R.id.title_)
+
+                    title.text = "Edit Post"
+                    text.setText(post.text)
+                    Glide.with(view.context).load(post.imageUrl).into(image)
+
+                    dialogPlus.show()
+                    cancelBtn.setOnClickListener {
+                        dialogPlus.dismiss()
+                    }
+                    dialogPlus.holderView.findViewById<ImageView>(R.id.editImage)
+                        .setOnClickListener {
+                            requestPermission()
+                            getImage.launch("image/*")
+                        }
+
+                    saveBtn.setOnClickListener {
+                        if (!check) {
+                            var storageRef =
+                                FirebaseStorage.getInstance().reference.child("images")
+                            storageRef = storageRef.child(System.currentTimeMillis().toString())
+                            storageRef.putFile(imageUri).addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    storageRef.downloadUrl.addOnSuccessListener { uri ->
+                                        imageUrl = uri.toString()
+                                        postDao.updatePost(
+                                            text.text.toString(),
+                                            imageUrl,
+                                            postId
+                                        )
+                                    }
+                                    Toast.makeText(context, "Updated !!", Toast.LENGTH_SHORT)
+                                        .show()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        it.exception?.message,
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                            }.addOnFailureListener {
+                                Toast.makeText(context, "Failed !!", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            postDao.updatePost(text.text.toString(), post.imageUrl, post.uid)
+                        }
+                        check = true
+                        dialogPlus.dismiss()
                     }
                     true
                 }
                 R.id.deleteBtn -> {
-                    if (auth.currentUser!!.uid == post.createdBy.uid) {
-                        val postDao = PostDao()
-                        postDao.deletePost(postId)
-                        val photoRef: StorageReference =
-                            FirebaseStorage.getInstance().getReferenceFromUrl(post.imageUrl)
-                        photoRef.delete().addOnSuccessListener {
-                            Log.d(TAG, "onSuccess: deleted file");
-                        }
-                            .addOnFailureListener {
-                                Log.d(TAG, "onFailure: did not delete file");
-                            }
-                    } else {
-                        Toast.makeText(
-                            view.context,
-                            "You can't modify others posts!!",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    postDao.deletePost(postId)
+                    val photoRef: StorageReference =
+                        FirebaseStorage.getInstance().getReferenceFromUrl(post.imageUrl)
+                    photoRef.delete().addOnSuccessListener {
+                        Log.d(TAG, "onSuccess: deleted file");
                     }
+                        .addOnFailureListener {
+                            Log.d(TAG, "onFailure: did not delete file");
+                        }
                     true
                 }
                 else -> true
@@ -351,6 +402,12 @@ class Home : Fragment(), IPostAdapter {
             .invoke(menu, true)
     }
 
+    private fun getRandomString(length: Int): String {
+        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+        return (1..length)
+            .map { allowedChars.random() }
+            .joinToString("")
+    }
 
     private fun requestPermission() {
         //GuidebyGoogleDevelopers
