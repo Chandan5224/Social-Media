@@ -19,6 +19,7 @@ import com.example.socialmedia20.NewsAdapter
 import com.example.socialmedia20.R
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import org.w3c.dom.Text
 
 class SavePostsRecyclerAdapter(
     val context: Context,
@@ -32,6 +33,8 @@ class SavePostsRecyclerAdapter(
         val createdAt: TextView = itemView.findViewById(R.id.createdAt)
         val likeCount: TextView = itemView.findViewById(R.id.likeCount)
         val userImage: ImageView = itemView.findViewById(R.id.userImage)
+        var shareCount: TextView = itemView.findViewById(R.id.shareCount)
+        var comCount: TextView = itemView.findViewById(R.id.comCount)
         val likeButton: ImageView = itemView.findViewById(R.id.likeButton)
         val image: ImageView = itemView.findViewById(R.id.postImage)
         val menu: ImageView = itemView.findViewById(R.id.menus)
@@ -56,7 +59,8 @@ class SavePostsRecyclerAdapter(
         Glide.with(holder.userImage.context).load(model.createdBy.imageUrl).circleCrop()
             .into(holder.userImage)
         Glide.with(holder.image.context).load(model.imageUrl).into(holder.image)
-        holder.likeCount.text = model.likedBy.size.toString()
+        holder.likeCount.text = Utils.formatCount(model.likedBy.size.toLong())
+        holder.shareCount.text = Utils.formatCount(model.shareBy.size.toLong())
         holder.createdAt.text = Utils.getTimeAgo(model.createdAt)
         holder.saveBtn.setImageDrawable(
             ContextCompat.getDrawable(

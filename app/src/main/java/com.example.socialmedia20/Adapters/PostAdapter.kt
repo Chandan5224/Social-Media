@@ -41,6 +41,8 @@ class PostAdapter(
         lateinit var userText: TextView
         lateinit var createdAt: TextView
         lateinit var likeCount: TextView
+        lateinit var shareCount: TextView
+        lateinit var comCount: TextView
         lateinit var userImage: ImageView
         lateinit var likeButton: ImageView
         lateinit var image: ImageView
@@ -55,6 +57,8 @@ class PostAdapter(
             userText = itemView.findViewById(R.id.userName)
             createdAt = itemView.findViewById(R.id.createdAt)
             likeCount = itemView.findViewById(R.id.likeCount)
+            shareCount = itemView.findViewById(R.id.shareCount)
+            comCount = itemView.findViewById(R.id.comCount)
             userImage = itemView.findViewById(R.id.userImage)
             likeButton = itemView.findViewById(R.id.likeButton)
             image = itemView.findViewById(R.id.postImage)
@@ -79,7 +83,8 @@ class PostAdapter(
         Glide.with(holder.userImage.context).load(model.createdBy.imageUrl).circleCrop()
             .into(holder.userImage)
         Glide.with(holder.image.context).load(model.imageUrl).into(holder.image)
-        holder.likeCount.text = Utils.formatCount(model.likedBy.size)
+        holder.likeCount.text = Utils.formatCount(model.likedBy.size.toLong())
+        holder.shareCount.text = Utils.formatCount(model.shareBy.size.toLong())
         holder.createdAt.text = Utils.getTimeAgo(model.createdAt)
 
         // check the user already like the post or not
@@ -168,8 +173,9 @@ class PostAdapter(
             listener.onMenu(it, model.uid, model)
         }
         holder.shareBtn.setOnClickListener {
-            if (holder.image.drawable != null)
+            if (holder.image.drawable != null){
                 listener.onSharePost(model, holder.image)
+            }
         }
 
         holder.lottieAnimationView.addAnimatorListener(object : Animator.AnimatorListener {

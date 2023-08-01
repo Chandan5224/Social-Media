@@ -21,6 +21,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -40,6 +41,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.orhanobut.dialogplus.DialogPlus
 import com.orhanobut.dialogplus.ViewHolder
+import kotlin.math.log
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -203,6 +205,7 @@ class Home : Fragment(), IPostAdapter {
     }
 
     override fun onSharePost(post: Post, imageView: ImageView) {
+        PostDao().addShare(post.uid)
         val mBitmap = imageView.drawable as BitmapDrawable
         val bitmap = mBitmap.bitmap
         val contentResolver = requireActivity().contentResolver
@@ -220,16 +223,21 @@ class Home : Fragment(), IPostAdapter {
 
     override fun onComment(post: Post) {
         val dialogPlus = DialogPlus.newDialog(binding.root.context)
-            .setContentHolder(ViewHolder(R.layout.edit_post))
+            .setContentHolder(ViewHolder(R.layout.comment_section))
             .setExpanded(true, 1300)
             .setCancelable(true)
             .create()
-        dialogPlus.holderView.findViewById<EditText>(R.id.editTitle).visibility = View.GONE
-        dialogPlus.holderView.findViewById<ImageView>(R.id.editImage).visibility = View.GONE
-        dialogPlus.holderView.findViewById<MaterialButton>(R.id.saveBtn).visibility = View.GONE
-        dialogPlus.holderView.findViewById<TextView>(R.id.title_).text = "Comments"
+        val postTitle = dialogPlus.holderView.findViewById<EditText>(R.id.comEditText)
         dialogPlus.show()
 
+        dialogPlus.holderView.findViewById<ImageView>(R.id.comSendBtn).setOnClickListener {
+            val comText = postTitle.text.toString().trim()
+            if (comText.isNotEmpty()) {
+                val postDao = PostDao()
+                postDao.addComment(comText, post.uid)
+                dialogPlus.dismiss()
+            }
+        }
         dialogPlus.holderView.findViewById<ImageView>(R.id.cancelBtn).setOnClickListener {
             dialogPlus.dismiss()
         }

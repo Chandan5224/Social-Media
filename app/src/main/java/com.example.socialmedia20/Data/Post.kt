@@ -16,5 +16,7 @@ data class Post(
     @ColumnInfo(name = "createdAt") val createdAt: Long = 0,
     @ColumnInfo(name = "imageUrl") val imageUrl: String = "",
     @ColumnInfo(name = "likedBy") val likedBy: ArrayList<String> = arrayListOf(),
+    @ColumnInfo(name = "shareBy") val shareBy: ArrayList<String> = arrayListOf(),
+    @ColumnInfo(name = "comments") val comments: ArrayList<Comment> = arrayListOf(),
     @ColumnInfo(name = "saveTime") var saveTime: Long = 0L
 )

@@ -12,6 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.*
+
 @Dao
 class PostDao {
     private val db = FirebaseFirestore.getInstance()
@@ -36,7 +37,7 @@ class PostDao {
         fun deleteAll()
 
         @Query("SELECT * FROM posts WHERE uid=:postId")
-        fun getById(postId : String): Post
+        fun getById(postId: String): Post
     }
 
 
@@ -60,9 +61,7 @@ class PostDao {
 
     private fun getRandomString(length: Int): String {
         val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
-        return (1..length)
-            .map { allowedChars.random() }
-            .joinToString("")
+        return (1..length).map { allowedChars.random() }.joinToString("")
     }
 
     fun updatePost(text: String, imageUrl: String, postId: String) {
@@ -72,7 +71,58 @@ class PostDao {
             val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
             val currentTime = System.currentTimeMillis()
             val post = getPostByID(postId).await().toObject(Post::class.java)!!
-            val nPost = Post(post.uid, text, user, currentTime, imageUrl, post.likedBy)
+            val nPost = Post(
+                post.uid,
+                text,
+                user,
+                currentTime,
+                imageUrl,
+                post.likedBy,
+                post.shareBy,
+                post.comments
+            )
+            postCollection.document(postId).set(nPost)
+        }
+    }
+
+    fun addComment(textCom: String, postId: String) {
+        GlobalScope.launch {
+            val currentUserId = auth.currentUser!!.uid
+            val userDao = UserDao()
+            val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
+            val comment =
+                Comment(getRandomString(15), user.uid, user.displayName!!, user.imageUrl, textCom)
+            val post = getPostByID(postId).await().toObject(Post::class.java)!!
+            post.comments.add(comment)
+            val nPost = Post(
+                post.uid,
+                post.text,
+                post.createdBy,
+                post.createdAt,
+                post.imageUrl,
+                post.likedBy,
+                post.shareBy,
+                post.comments
+            )
+            postCollection.document(postId).set(nPost)
+        }
+    }
+
+    fun addShare(postId: String) {
+        GlobalScope.launch {
+            val currentUserId = auth.currentUser!!.uid
+            val post = getPostByID(postId).await().toObject(Post::class.java)!!
+            post.shareBy.add(currentUserId)
+            val nPost = Post(
+                post.uid,
+                post.text,
+                post.createdBy,
+                post.createdAt,
+                post.imageUrl,
+                post.likedBy,
+                post.shareBy,
+                post.comments
+            )
             postCollection.document(postId).set(nPost)
         }
     }
@@ -104,10 +154,8 @@ class PostDao {
             val userDao = UserDao()
             val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
             val isSave = user.save.contains(post.uid)
-            if (!isSave)
-                user.save.add(post.uid)
-            else
-                user.save.remove(post.uid)
+            if (!isSave) user.save.add(post.uid)
+            else user.save.remove(post.uid)
             userDao.updateUser(user)
         }
     }

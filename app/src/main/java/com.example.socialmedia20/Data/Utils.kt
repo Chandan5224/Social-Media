@@ -10,20 +10,26 @@ class Utils {
         private const val HOUR_MILLIS = 60 * MINUTE_MILLIS
         private const val DAY_MILLIS = 24 * HOUR_MILLIS
         private const val WEEK_MILLIS = 7 * DAY_MILLIS
-        private const val K = 1000
-        private const val M = 1000000
+        private const val K = 1000L
+        private const val M = 1000000L
 
-        fun formatCount(likeCount: Int): String {
+        fun formatCount(likeCount: Long): String {
             return when {
                 likeCount >= M -> {
-                    val countK = likeCount.toFloat() / M
-                    String.format("%.1fM", countK)
+                    if (likeCount % M != 0L) {
+                        val countK = likeCount.toFloat() / M
+                        String.format("%.1fM", countK)
+                    } else
+                        (likeCount / M).toInt().toString()+"M"
                 }
                 likeCount >= K -> {
-                    val countK = likeCount.toFloat() / K
-                    String.format("%.1fK", countK)
+                    if (likeCount % K != 0L) {
+                        val countK = likeCount.toFloat() / K
+                        String.format("%.1fK", countK+100)
+                    } else
+                        ((100+likeCount / K).toInt()).toString()+"K"
                 }
-                else -> likeCount.toString()
+                else -> (likeCount+100).toString()
             }
         }
 
