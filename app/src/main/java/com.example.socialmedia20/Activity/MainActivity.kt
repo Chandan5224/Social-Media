@@ -9,6 +9,7 @@ import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -17,6 +18,7 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
@@ -182,7 +184,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun accountPopup() {
         dialogPlus = DialogPlus.newDialog(this).setContentHolder(ViewHolder(R.layout.account_popup))
-            .setExpanded(true, 1000)
+//            .setExpanded(true, 1000)
             .setCancelable(true)
             .create()
         dialogPlus.show()
@@ -206,7 +208,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun createPost() {
         dialogPlus = DialogPlus.newDialog(this).setContentHolder(ViewHolder(R.layout.edit_post))
-            .setExpanded(true, 1300)
+//            .setExpanded(true, 1200)
             .setCancelable(true)
             .create()
         dialogPlus.show()

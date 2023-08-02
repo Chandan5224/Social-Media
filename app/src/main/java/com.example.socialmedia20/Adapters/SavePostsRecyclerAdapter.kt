@@ -61,6 +61,7 @@ class SavePostsRecyclerAdapter(
         Glide.with(holder.image.context).load(model.imageUrl).into(holder.image)
         holder.likeCount.text = Utils.formatCount(model.likedBy.size.toLong())
         holder.shareCount.text = Utils.formatCount(model.shareBy.size.toLong())
+        holder.comCount.text = Utils.formatCount(model.comments.size.toLong())
         holder.createdAt.text = Utils.getTimeAgo(model.createdAt)
         holder.saveBtn.setImageDrawable(
             ContextCompat.getDrawable(

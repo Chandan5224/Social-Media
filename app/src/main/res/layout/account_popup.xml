@@ -1,34 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp">
+
     <TextView
         android:id="@+id/title_"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:fontFamily="@font/aclonica"
-        android:text="Account"
-        android:gravity="center"
-        android:textColor="@color/mainColor"
         android:background="@drawable/under_line"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:text="Account"
+        android:textColor="@color/mainColor"
         android:textSize="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <ImageView
-        android:id="@+id/userImage"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card"
         android:layout_width="140dp"
         android:layout_height="140dp"
+        app:cardCornerRadius="70dp"
         android:layout_marginTop="30dp"
-        android:src="@drawable/kartik"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_" />
+        app:layout_constraintTop_toBottomOf="@+id/title_">
+
+        <ImageView
+            android:id="@+id/userImage"
+            android:layout_width="match_parent"
+            android:scaleType="centerCrop"
+            android:layout_height="match_parent"
+            android:src="@drawable/kartik" />
+    </androidx.cardview.widget.CardView>
+
 
     <TextView
         android:id="@+id/userName"
@@ -40,21 +50,21 @@
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userImage" />
+        app:layout_constraintTop_toBottomOf="@+id/card" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/signoutBtn"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign Out"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_marginTop="15dp"
+        android:text="Sign Out"
         android:textColor="@color/mainColor"
-        app:strokeColor="@color/mainColor"
         android:textStyle="bold"
-        app:strokeWidth="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userName" />
+        app:layout_constraintTop_toBottomOf="@+id/userName"
+        app:strokeColor="@color/mainColor"
+        app:strokeWidth="2dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

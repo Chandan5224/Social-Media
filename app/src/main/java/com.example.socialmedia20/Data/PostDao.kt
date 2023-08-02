@@ -7,9 +7,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import java.util.*
 
@@ -85,13 +83,12 @@ class PostDao {
         }
     }
 
-    fun addComment(textCom: String, postId: String) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun addComment(textCom: String, postId: String,comment: Comment) {
         GlobalScope.launch {
             val currentUserId = auth.currentUser!!.uid
             val userDao = UserDao()
             val user = userDao.getUserByID(currentUserId).await().toObject(User::class.java)!!
-            val comment =
-                Comment(getRandomString(15), user.uid, user.displayName!!, user.imageUrl, textCom)
             val post = getPostByID(postId).await().toObject(Post::class.java)!!
             post.comments.add(comment)
             val nPost = Post(

@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.socialmedia20.Adapters.ScreenSlidePagerAdapter
 import com.example.socialmedia20.Fragments.FirstScreen
 import com.example.socialmedia20.Fragments.SecondScreen
@@ -23,6 +24,7 @@ class IntroActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityIntroBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         val fragmentList = arrayListOf(
             FirstScreen(), SecondScreen(), ThirdScreen()
         )

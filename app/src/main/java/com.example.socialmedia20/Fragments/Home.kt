@@ -25,12 +25,10 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.socialmedia20.Adapters.CommentAdapter
 import com.example.socialmedia20.Adapters.IPostAdapter
 import com.example.socialmedia20.Adapters.PostAdapter
-import com.example.socialmedia20.Data.Post
-import com.example.socialmedia20.Data.PostDao
-import com.example.socialmedia20.Data.Report
-import com.example.socialmedia20.Data.ReportDao
+import com.example.socialmedia20.Data.*
 import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.FragmentHomeBinding
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -41,7 +39,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.orhanobut.dialogplus.DialogPlus
 import com.orhanobut.dialogplus.ViewHolder
-import kotlin.math.log
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -56,9 +53,7 @@ private const val ARG_PARAM2 = "param2"
  */
 
 class Home : Fragment(), IPostAdapter {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
 
     private lateinit var recycleView: RecyclerView
     lateinit var binding: FragmentHomeBinding
@@ -69,15 +64,7 @@ class Home : Fragment(), IPostAdapter {
     var check = true
     lateinit var imageUri: Uri
     private var imageUrl: String = ""
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    lateinit var comAddapter: CommentAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -224,24 +211,57 @@ class Home : Fragment(), IPostAdapter {
     override fun onComment(post: Post) {
         val dialogPlus = DialogPlus.newDialog(binding.root.context)
             .setContentHolder(ViewHolder(R.layout.comment_section))
-            .setExpanded(true, 1300)
+//            .setExpanded(true, 1270)
             .setCancelable(true)
             .create()
-        val postTitle = dialogPlus.holderView.findViewById<EditText>(R.id.comEditText)
+        val commentEdit = dialogPlus.holderView.findViewById<EditText>(R.id.comEditText)
+        val noComment = dialogPlus.holderView.findViewById<TextView>(R.id.noComments)
+        val currUserImage = dialogPlus.holderView.findViewById<ImageView>(R.id.curUserImage)
+        val comRecyclerView =
+            dialogPlus.holderView.findViewById<RecyclerView>(R.id.commentRecyclerView)
+        comAddapter = CommentAdapter(binding.root.context)
+
+        if (post.comments.size != 0) {
+            comRecyclerView.visibility = View.VISIBLE
+            noComment.visibility = View.GONE
+            setupCommentRecyclerView(post.comments, comRecyclerView)
+        } else {
+            comRecyclerView.visibility = View.GONE
+            noComment.visibility = View.VISIBLE
+        }
         dialogPlus.show()
+        val auth = postDao.auth
+        Glide.with(binding.root.context).load(auth.currentUser!!.photoUrl).into(currUserImage)
 
         dialogPlus.holderView.findViewById<ImageView>(R.id.comSendBtn).setOnClickListener {
-            val comText = postTitle.text.toString().trim()
+            val comText = commentEdit.text.toString().trim()
             if (comText.isNotEmpty()) {
-                val postDao = PostDao()
-                postDao.addComment(comText, post.uid)
-                dialogPlus.dismiss()
+                commentEdit.setText("")
+                val comment = Comment(
+                    getRandomString(15), auth.currentUser!!.uid, auth.currentUser!!.displayName!!,
+                    auth.currentUser!!.photoUrl.toString(), comText
+                )
+                if (post.comments.size == 0) {
+                    comRecyclerView.visibility = View.VISIBLE
+                    noComment.visibility = View.GONE
+                    setupCommentRecyclerView(post.comments, comRecyclerView)
+                }
+                post.comments.add(comment)
+                postDao.addComment(comText, post.uid, comment)
+                comAddapter.updateComment(post.comments)
             }
         }
         dialogPlus.holderView.findViewById<ImageView>(R.id.cancelBtn).setOnClickListener {
             dialogPlus.dismiss()
         }
 
+    }
+
+
+    fun setupCommentRecyclerView(comList: ArrayList<Comment>, recyclerView: RecyclerView) {
+        comAddapter.updateComment(comList)
+        recyclerView.adapter = comAddapter
+        recyclerView.layoutManager = LinearLayoutManager(context)
     }
 
     override fun onSave(post: Post) {
@@ -266,7 +286,7 @@ class Home : Fragment(), IPostAdapter {
                     var reportMes = ""
                     dialogPlus = DialogPlus.newDialog(view.context)
                         .setContentHolder(ViewHolder(R.layout.report_popup))
-                        .setExpanded(true, 1300)
+//                        .setExpanded(true, 1300)
                         .setCancelable(true)
                         .create()
 
@@ -299,6 +319,9 @@ class Home : Fragment(), IPostAdapter {
                                 }
                             }
                         }
+                    view.findViewById<ImageView>(R.id.cancelBtn).setOnClickListener {
+                        dialogPlus.dismiss()
+                    }
                     view.findViewById<MaterialButton>(R.id.reportBtn).setOnClickListener {
                         if (reportMes != "") {
                             val user = auth.currentUser!!
