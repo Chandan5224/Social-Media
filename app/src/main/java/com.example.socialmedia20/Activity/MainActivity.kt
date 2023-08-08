@@ -1,6 +1,7 @@
 package com.example.socialmedia20.Activity
 
 import android.app.AlertDialog
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -9,6 +10,7 @@ import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -28,14 +30,18 @@ import com.example.socialmedia20.Fragments.Home
 import com.example.socialmedia20.Fragments.Memes
 import com.example.socialmedia20.Fragments.News
 import com.example.socialmedia20.Fragments.SaveFrag
+import com.example.socialmedia20.Notification.FCMNotificationSender
+import com.example.socialmedia20.Notification.SharedPrefManager
 import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.ActivityMainBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.orhanobut.dialogplus.DialogPlus
 import com.orhanobut.dialogplus.ViewHolder
@@ -57,6 +63,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(ContentValues.TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+            // Get new FCM registration token
+            val token = task.result
+            SharedPrefManager.getInstance().invoke(token)
+            Log.d("Token", token)
+        })
+        FirebaseMessaging.getInstance().subscribeToTopic("post")
+
         postDao = PostDao()
         dialogPlus = DialogPlus.newDialog(this).create()
         // set custom toolbar
@@ -244,9 +263,23 @@ class MainActivity : AppCompatActivity() {
                         binding.uploadLoader.visibility = View.GONE
                         storageRef.downloadUrl.addOnSuccessListener { uri ->
                             imageUrl = uri.toString()
+                            //new post
                             postDao.addPost(inputTitle, imageUrl)
+                            /// send notification
+                            val userName = postDao.auth.currentUser!!.displayName
+                            val userImageUrl = postDao.auth.currentUser!!.photoUrl
+                            val fcmNotificationSender = FCMNotificationSender(
+                                "/topics/post",
+                                "$userName post a image",
+                                inputTitle,
+                                imageUrl,
+                                userImageUrl.toString(),
+                                this@MainActivity
+                            )
+                            fcmNotificationSender.sendNotifications()
                         }
                         Toast.makeText(this, "Post Added !!", Toast.LENGTH_SHORT).show()
+
                         postingCheck = false
                     } else {
                         Toast.makeText(this, it.exception?.message, Toast.LENGTH_SHORT).show()
