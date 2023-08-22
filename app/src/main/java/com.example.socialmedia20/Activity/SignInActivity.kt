@@ -1,25 +1,30 @@
 package com.example.socialmedia20.Activity
 
 
+import android.Manifest
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.socialmedia20.Data.User
-import com.example.socialmedia20.R
 import com.example.socialmedia20.Data.UserDao
+import com.example.socialmedia20.R
 import com.example.socialmedia20.databinding.ActivitySignInBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -27,16 +32,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import io.grpc.Status.Code
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import org.w3c.dom.Text
-import java.io.File
 
 
 class SignInActivity : AppCompatActivity() {
@@ -45,7 +48,7 @@ class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
     lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var auth: FirebaseAuth
-    lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sharedPreferences: SharedPreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,11 +71,9 @@ class SignInActivity : AppCompatActivity() {
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
+            .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
         // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
         auth = Firebase.auth
 
         binding.termBtn.setOnClickListener {
@@ -113,13 +114,14 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun signIn() {
+        binding.proBarGgg.visibility = View.VISIBLE
         val signInIntent = mGoogleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
+        binding.proBarGgg.visibility = View.GONE
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             handleSignInResult(task)
@@ -128,8 +130,7 @@ class SignInActivity : AppCompatActivity() {
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
-            val account =
-                completedTask.getResult(ApiException::class.java)!!
+            val account = completedTask.getResult(ApiException::class.java)!!
             Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
             firebaseAuthWithGoogle(account.idToken!!)
         } catch (e: ApiException) {
@@ -161,8 +162,11 @@ class SignInActivity : AppCompatActivity() {
         if (firebaseUser != null) {
             // add user
             val user = User(
-                firebaseUser.uid, firebaseUser.displayName, firebaseUser.photoUrl.toString(),
-                firebaseUser.phoneNumber.toString(), firebaseUser.email.toString()
+                firebaseUser.uid,
+                firebaseUser.displayName,
+                firebaseUser.photoUrl.toString(),
+                firebaseUser.phoneNumber.toString(),
+                firebaseUser.email.toString()
             )
             val userDao = UserDao()
             userDao.addUser(user)
@@ -196,8 +200,7 @@ class SignInActivity : AppCompatActivity() {
             // if the android version is below M
             @Suppress("DEPRECATION") val networkInfo =
                 connectivityManager.activeNetworkInfo ?: return false
-            @Suppress("DEPRECATION")
-            return networkInfo.isConnected
+            @Suppress("DEPRECATION") return networkInfo.isConnected
         }
     }
 

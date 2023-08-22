@@ -1,5 +1,6 @@
 package com.example.socialmedia20.Activity
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
@@ -21,6 +22,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
@@ -37,6 +39,7 @@ import com.example.socialmedia20.databinding.ActivityMainBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -54,7 +57,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var imageUri: Uri
     private var imageUrl: String = ""
     private lateinit var postDao: PostDao
-    private lateinit var getImage: ActivityResultLauncher<String?>
     lateinit var dialogPlus: DialogPlus
     var check = true
     var postingCheck = false
@@ -64,6 +66,69 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // permission
+        onClickRequestPermission(binding.root)
+        getUserNotificationToken()
+        postDao = PostDao()
+        dialogPlus = DialogPlus.newDialog(this).create()
+        // set custom toolbar
+        binding.toolbar.title = ""
+        setSupportActionBar(binding.toolbar)
+        // Call
+        setupViewPager()
+        pageChangedListener()
+    }
+
+    // user permission request
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                Log.i("Permission: ", "Granted")
+            } else {
+                Log.i("Permission: ", "Denied")
+            }
+        }
+
+    private fun onClickRequestPermission(view: View) {
+        when {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                Log.i("Permission: ", "Granted")
+            }
+
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) -> {
+                Snackbar.make(
+                    view,
+                    "Notification access is required to receive notification.",
+                    Snackbar.LENGTH_INDEFINITE
+                )
+                    .setAction("OK") {
+                        requestPermissionLauncher.launch(
+                            Manifest.permission.POST_NOTIFICATIONS
+                        )
+                    }
+                    .setActionTextColor(resources.getColor(android.R.color.holo_red_light))
+                    .show()
+            }
+            else -> {
+                requestPermissionLauncher.launch(
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+            }
+        }
+
+    }
+
+    // Notification User Token and subscribe the channel
+    private fun getUserNotificationToken() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w(ContentValues.TAG, "Fetching FCM registration token failed", task.exception)
@@ -75,30 +140,21 @@ class MainActivity : AppCompatActivity() {
             Log.d("Token", token)
         })
         FirebaseMessaging.getInstance().subscribeToTopic("post")
+    }
 
-        postDao = PostDao()
-        dialogPlus = DialogPlus.newDialog(this).create()
-        // set custom toolbar
-        binding.toolbar.title = ""
-        setSupportActionBar(binding.toolbar)
-        getImage =
-            registerForActivityResult(ActivityResultContracts.GetContent(), ActivityResultCallback {
-                if (it != null) {
-                    imageUri = it
-                    dialogPlus.holderView.findViewById<ImageView>(R.id.editImage).setImageURI(it)
-                    check = false
-                } else {
-                    dialogPlus.holderView.findViewById<ImageView>(R.id.editImage)
-                        .setImageDrawable(getDrawable(R.drawable.upload2))
-                }
-            })
+    private var getImage =
+        registerForActivityResult(ActivityResultContracts.GetContent(), ActivityResultCallback {
+            if (it != null) {
+                imageUri = it
+                dialogPlus.holderView.findViewById<ImageView>(R.id.editImage).setImageURI(it)
+                check = false
+            } else {
+                dialogPlus.holderView.findViewById<ImageView>(R.id.editImage)
+                    .setImageDrawable(getDrawable(R.drawable.upload2))
+            }
+        })
 
-        if (!checkForInternet(binding.root.context)) {
-            allertShow("Connect to the Internet", "Ok", "", null)
-        }
-        // Call
-        setupViewPager()
-
+    private fun pageChangedListener() {
         binding.viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrolled(
                 position: Int,
@@ -201,6 +257,7 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    // Account POPUP
     private fun accountPopup() {
         dialogPlus = DialogPlus.newDialog(this).setContentHolder(ViewHolder(R.layout.account_popup))
 //            .setExpanded(true, 1000)
@@ -296,53 +353,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun checkForInternet(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        // if the android version is equal to M
-        // or greater we need to use the
-        // NetworkCapabilities to check what type of
-        // network has the internet connection
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Returns a Network object corresponding to
-            // the currently active default data network.
-            val network = connectivityManager.activeNetwork ?: return false
-            return true
-        } else {
-            // if the android version is below M
-            @Suppress("DEPRECATION") val networkInfo =
-                connectivityManager.activeNetworkInfo ?: return false
-            @Suppress("DEPRECATION") return networkInfo.isConnected
-        }
-    }
-
-    private fun allertShow(title: String, pos: String, neg: String, dialogPlus: DialogPlus?) {
-        val builder = AlertDialog.Builder(binding.root.context)
-
-        builder.apply {
-            setTitle(title)
-            setPositiveButton(pos) { dialogInterface, which ->
-                check = true
-                dialogPlus?.dismiss()
-            }
-            setNegativeButton(neg) { dialogInterface, which ->
-                dialogInterface.cancel()
-            }
-        }
-        val alertDialog: AlertDialog = builder.create()
-        alertDialog.setCancelable(false)
-        alertDialog.show()
-    }
-
-//    private fun requestPermission() {
-//        //GuidebyGoogleDevelopers
-//        if (ContextCompat.checkSelfPermission(
-//                binding.root.context, android.Manifest.permission.READ_EXTERNAL_STORAGE
-//            ) != PackageManager.PERMISSION_GRANTED
-//        ) {
-//            requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 100)
-//        }
-//    }
 
     override fun onBackPressed() {
         if (dialogPlus.isShowing)
